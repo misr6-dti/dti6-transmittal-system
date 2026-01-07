@@ -1,8 +1,8 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "misr6-dti/dti6-transmittal-system",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "DTI Region VI Transmittal Management System",
     "keywords": [
         "laravel",
         "framework"
