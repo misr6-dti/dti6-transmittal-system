@@ -19,7 +19,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        \Illuminate\Pagination\Paginator::useBootstrapFive();
+        \Illuminate\Pagination\Paginator::useBootstrap();
         \Illuminate\Support\Facades\Gate::policy(\App\Models\Transmittal::class, \App\Policies\TransmittalPolicy::class);
 
         // Track Login Statistics
