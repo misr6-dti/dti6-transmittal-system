@@ -1,3 +1,18 @@
+
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Fix Bootstrap/Tailwind Collapse Collision */
+.collapse:not(.show) {
+    display: none;
+}
+.navbar-collapse.collapse {
+    visibility: visible !important;
+}
+@media (min-width: 992px) {
+    .navbar-expand-lg .navbar-collapse.collapse {
+        display: flex !important;
+    }
+}
