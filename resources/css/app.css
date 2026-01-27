@@ -5,7 +5,13 @@
 @tailwind utilities;
 
 /* Fix Bootstrap/Tailwind Collapse Collision */
-.collapse:not(.show) {
+.accordion-collapse.collapse:not(.show) {
+    display: none !important;
+}
+.accordion-collapse.collapse.show {
+    display: block !important;
+}
+.collapse:not(.show):not(.navbar-collapse) {
     display: none;
 }
 .navbar-collapse.collapse {
