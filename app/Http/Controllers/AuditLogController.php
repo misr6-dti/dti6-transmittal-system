@@ -48,4 +48,22 @@ class AuditLogController extends Controller
 
         return view('audit.index', compact('logs', 'offices'));
     }
+
+    public function show(TransmittalLog $transmittalLog)
+    {
+        $user = Auth::user();
+        
+        // Authorization check - ensure user has access to this log
+        if (!$user->hasAnyRole(['Super Admin', 'Regional MIS'])) {
+            $transmittal = $transmittalLog->transmittal;
+            if ($transmittal->sender_office_id !== $user->office_id && 
+                $transmittal->receiver_office_id !== $user->office_id) {
+                abort(403, 'Unauthorized access to this audit log.');
+            }
+        }
+
+        $log = $transmittalLog->load(['user.office', 'transmittal.senderOffice', 'transmittal.receiverOffice', 'transmittal.items']);
+
+        return view('audit.show', compact('log'));
+    }
 }

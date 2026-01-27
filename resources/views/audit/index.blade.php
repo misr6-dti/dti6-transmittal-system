@@ -114,7 +114,7 @@
                             <div class="fw-medium small">{{ $log->user->name }}</div>
                         </td>
                         <td class="text-end pe-4">
-                            <a href="{{ route('transmittals.show', $log->transmittal) }}" class="btn btn-sm btn-navy rounded-pill px-3" title="View Document">
+                            <a href="{{ route('audit.show', $log) }}" class="btn btn-sm btn-navy rounded-pill px-3" title="View Audit Details">
                                 <i class="bi bi-eye"></i>
                             </a>
                         </td>

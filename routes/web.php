@@ -21,6 +21,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/audit-history', [\App\Http\Controllers\AuditLogController::class, 'index'])->name('audit.index');
+    Route::get('/audit-history/{transmittalLog}', [\App\Http\Controllers\AuditLogController::class, 'show'])->name('audit.show');
     
     // Notification Routes
     Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
