@@ -58,7 +58,7 @@
                             <select name="receiver_office_id"
                                 class="form-select @error('receiver_office_id') is-invalid @enderror" required>
                                 @foreach($offices as $office)
-                                    <option value="{{ $office->id }}" {{ old('receiver_office_id', $transmittal->receiver_office_id) == $office->id ? 'selected' : '' }}>{{ $office->name }}
+                                    <option value="{{ $office->id }}" {{ old('receiver_office_id', $transmittal->receiver_office_id) == $office->id ? 'selected' : '' }}>{!! $office->display_name !!}
                                     </option>
                                 @endforeach
                             </select>

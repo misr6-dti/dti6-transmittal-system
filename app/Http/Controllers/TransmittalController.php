@@ -70,7 +70,15 @@ class TransmittalController extends Controller
     public function create()
     {
         $this->authorize('create', Transmittal::class);
-        $offices = Office::where('id', '!=', Auth::user()->office_id)->get();
+        // Get ALL offices first for hierarchy building
+        $allOffices = Office::all();
+        // Format with hierarchy
+        $formattedOffices = $this->formatOfficesHierarchy($allOffices);
+        // Now exclude user's own office from the final list
+        $offices = $formattedOffices->filter(function($office) {
+            return $office->id != Auth::user()->office_id;
+        })->values();
+        
         $userOffice = Auth::user()->office;
         
         // Generate a reference number: T-OFFICE-YEAR-SEQUENCE_NUMBER
@@ -189,7 +197,15 @@ class TransmittalController extends Controller
             }
         }
 
-        $offices = Office::where('id', '!=', Auth::user()->office_id)->get();
+        // Get ALL offices first for hierarchy building
+        $allOffices = Office::all();
+        // Format with hierarchy
+        $formattedOffices = $this->formatOfficesHierarchy($allOffices);
+        // Now exclude user's own office from the final list
+        $offices = $formattedOffices->filter(function($office) {
+            return $office->id != Auth::user()->office_id;
+        })->values();
+        
         return view('transmittals.edit', compact('transmittal', 'offices'));
     }
 
@@ -367,5 +383,41 @@ class TransmittalController extends Controller
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Error updating items'], 500);
         }
+    }
+
+    /**
+     * Format offices with hierarchy for dropdown display
+     * Returns collection with prefixed codes showing the office structure
+     */
+    private function formatOfficesHierarchy($offices, $parentId = null, $prefix = '')
+    {
+        $result = [];
+        
+        // Convert to array for easier iteration
+        $officesArray = $offices->toArray();
+        
+        foreach ($officesArray as $office) {
+            // Only show offices matching current parent level
+            if (($office['parent_id'] === $parentId) || ($parentId === null && empty($office['parent_id']))) {
+                // Create display name with hierarchy using code
+                $displayName = $prefix . $office['code'] . ' (' . $office['type'] . ')';
+                
+                // Create a new object with display_name
+                $officeObj = (object) $office;
+                $officeObj->display_name = $displayName;
+                $result[] = $officeObj;
+                
+                // Recursively add children with increased indentation
+                $childResult = $this->formatOfficesHierarchy(
+                    $offices, 
+                    $office['id'], 
+                    $prefix . '&nbsp;&nbsp;&nbsp;'
+                );
+                // Convert collection to array for merging
+                $result = array_merge($result, $childResult->toArray());
+            }
+        }
+        
+        return collect($result);
     }
 }

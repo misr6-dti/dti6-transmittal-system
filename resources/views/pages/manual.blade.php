@@ -3,15 +3,15 @@
 @section('content')
 <div class="mb-5">
     <nav aria-label="breadcrumb">
-        <ol class="breadcrumb mb-1">
+        <ol class="breadcrumb mb-2">
             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-navy">Dashboard</a></li>
             <li class="breadcrumb-item active">User Manual</li>
         </ol>
     </nav>
-    <div class="d-flex justify-content-between align-items-center">
+    <div class="d-flex justify-content-between align-items-start">
         <div>
-            <h2 class="fw-extrabold mb-0">System User Manual</h2>
-            <p class="text-muted">Documentation for DTI-R6 Transmittal Management System.</p>
+            <h2 class="fw-extrabold mb-1">System User Manual</h2>
+            <p class="text-muted mb-0 small">Documentation for DTI-R6 Transmittal Management System.</p>
         </div>
         <button onclick="window.print()" class="btn btn-outline-navy no-print">
             <i class="bi bi-printer me-2"></i>Print Manual

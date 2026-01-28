@@ -3,15 +3,15 @@
 @section('content')
 <div class="mb-5">
     <nav aria-label="breadcrumb">
-        <ol class="breadcrumb mb-1">
+        <ol class="breadcrumb mb-2">
             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-navy">Dashboard</a></li>
             <li class="breadcrumb-item active">Audit History</li>
         </ol>
     </nav>
-    <div class="d-flex justify-content-between align-items-center">
+    <div class="d-flex justify-content-between align-items-start">
         <div>
-            <h2 class="fw-extrabold mb-0">System Audit Trail</h2>
-            <p class="text-muted">Comprehensive record of all transmittal modifications and movements.</p>
+            <h2 class="fw-extrabold mb-1">System Audit Trail</h2>
+            <p class="text-muted mb-0 small">Comprehensive record of all transmittal modifications and movements.</p>
         </div>
         <div class="badge bg-navy px-3 py-2 rounded-pill">
             <i class="bi bi-shield-check me-1"></i> Secure Logs
@@ -63,7 +63,7 @@
 <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
     <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
+            <table class="table table-hover align-middle mb-0 data-table">
                 <thead class="bg-light">
                     <tr>
                         <th class="ps-4 py-3">Timestamp</th>
@@ -131,11 +131,6 @@
             </table>
         </div>
     </div>
-    @if($logs->hasPages())
-    <div class="card-footer bg-white border-top-0 py-3">
-        {{ $logs->appends(request()->input())->links() }}
-    </div>
-    @endif
 </div>
 
 <style>

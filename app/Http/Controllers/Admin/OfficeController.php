@@ -10,7 +10,7 @@ class OfficeController extends Controller
 {
     public function index()
     {
-        $offices = Office::latest()->paginate(10);
+        $offices = Office::latest()->get();
         return view('admin.offices.index', compact('offices'));
     }
 
@@ -25,6 +25,7 @@ class OfficeController extends Controller
             'name' => 'required|string|max:255',
             'code' => 'required|string|max:50|unique:offices',
             'type' => 'required|string|max:100',
+            'parent_id' => 'nullable|exists:offices,id',
         ]);
 
         Office::create($request->all());
@@ -43,6 +44,7 @@ class OfficeController extends Controller
             'name' => 'required|string|max:255',
             'code' => 'required|string|max:50|unique:offices,code,'.$office->id,
             'type' => 'required|string|max:100',
+            'parent_id' => 'nullable|exists:offices,id|different:id',
         ]);
 
         $office->update($request->all());

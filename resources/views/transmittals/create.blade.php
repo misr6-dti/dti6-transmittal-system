@@ -50,7 +50,7 @@
                         <select name="receiver_office_id" class="form-select @error('receiver_office_id') is-invalid @enderror" required>
                             <option value="">Select Target Office...</option>
                             @foreach($offices as $office)
-                                <option value="{{ $office->id }}" {{ old('receiver_office_id') == $office->id ? 'selected' : '' }}>{{ $office->name }}</option>
+                                <option value="{{ $office->id }}" {{ old('receiver_office_id') == $office->id ? 'selected' : '' }}>{!! $office->display_name !!}</option>
                             @endforeach
                         </select>
                         @error('receiver_office_id') <div class="invalid-feedback">{{ $message }}</div> @enderror

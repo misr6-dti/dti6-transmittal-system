@@ -43,7 +43,7 @@ class AuditLogController extends Controller
             }
         }
 
-        $logs = $query->paginate(5);
+        $logs = $query->get();
         $offices = \App\Models\Office::all();
 
         return view('audit.index', compact('logs', 'offices'));

@@ -644,6 +644,9 @@ input:where([type='file']):focus {
   -webkit-print-color-adjust: unset;
           print-color-adjust: unset;
 }
+.visible {
+  visibility: visible;
+}
 .invisible {
   visibility: hidden;
 }
@@ -697,6 +700,10 @@ input:where([type='file']):focus {
 .my-2 {
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
+}
+.my-4 {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 .my-5 {
   margin-top: 1.25rem;

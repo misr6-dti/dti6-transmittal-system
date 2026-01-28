@@ -3,14 +3,16 @@
 @section('content')
 <div class="mb-5">
     <nav aria-label="breadcrumb">
-        <ol class="breadcrumb mb-1">
+        <ol class="breadcrumb mb-2">
             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-navy">Dashboard</a></li>
             <li class="breadcrumb-item"><a href="{{ route('audit.index') }}" class="text-navy">Audit History</a></li>
             <li class="breadcrumb-item active">Audit Details</li>
         </ol>
     </nav>
-    <h2 class="fw-extrabold mb-0">Audit Log Details</h2>
-    <p class="text-muted">Detailed information about this system action.</p>
+    <div>
+        <h2 class="fw-extrabold mb-1">Audit Log Details</h2>
+        <p class="text-muted mb-0 small">Detailed information about this system action.</p>
+    </div>
 </div>
 
 <div class="row">

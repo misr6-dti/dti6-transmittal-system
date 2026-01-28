@@ -1,5 +1,6 @@
 import './bootstrap';
 import 'bootstrap';
+import './datatables';
 
 import Alpine from 'alpinejs';
 

@@ -27,20 +27,30 @@
 
                     <div class="row g-3 mb-4">
                         <div class="col-md-6">
+                            <label class="form-label fw-bold small text-uppercase">Office Type</label>
+                            <select name="type" id="officeType" class="form-select @error('type') is-invalid @enderror" required>
+                                <option value="">Select Office Type</option>
+                                <option value="Regional" {{ old('type', $office->type) == 'Regional' ? 'selected' : '' }}>Regional Office</option>
+                                <option value="Provincial" {{ old('type', $office->type) == 'Provincial' ? 'selected' : '' }}>Provincial Office</option>
+                                <option value="Satellite" {{ old('type', $office->type) == 'Satellite' ? 'selected' : '' }}>Satellite Office</option>
+                                <option value="Division" {{ old('type', $office->type) == 'Division' ? 'selected' : '' }}>Division</option>
+                            </select>
+                            @error('type')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+                        <div class="col-md-6">
                             <label class="form-label fw-bold small text-uppercase">Office Code</label>
                             <input type="text" name="code" class="form-control @error('code') is-invalid @enderror" value="{{ old('code', $office->code) }}" required>
                             @error('code')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold small text-uppercase">Office Type</label>
-                            <select name="type" class="form-select @error('type') is-invalid @enderror" required>
-                                <option value="Regional" {{ $office->type == 'Regional' ? 'selected' : '' }}>Regional Office</option>
-                                <option value="Provincial" {{ $office->type == 'Provincial' ? 'selected' : '' }}>Provincial Office</option>
-                                <option value="Satellite" {{ $office->type == 'Satellite' ? 'selected' : '' }}>Satellite Office</option>
-                                <option value="Unit" {{ $office->type == 'Unit' ? 'selected' : '' }}>Specific Unit</option>
-                            </select>
-                            @error('type')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small text-uppercase">Parent Office (Optional)</label>
+                        <select name="parent_id" id="parentOffice" class="form-select @error('parent_id') is-invalid @enderror">
+                            <option value="">No Parent - This is a Root Office</option>
+                        </select>
+                        <small class="text-muted d-block mt-2">Parent office options will be filtered based on the selected office type hierarchy.</small>
+                        @error('parent_id')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                     </div>
 
                     <div class="d-flex justify-content-end gap-2 mt-5">
@@ -54,4 +64,66 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const typeSelect = document.getElementById('officeType');
+    const parentSelect = document.getElementById('parentOffice');
+    const currentOfficeId = {{ $office->id }};
+    const currentParentId = '{{ old('parent_id', $office->parent_id) }}';
+    
+    // Store all offices data
+    const allOffices = @json(\App\Models\Office::with('children')->get());
+    
+    // Office type hierarchy - what parent types are allowed for each type
+    const typeHierarchy = {
+        'Regional': [],  // Regional can only be root
+        'Provincial': ['Regional'],  // Provincial can be under Regional
+        'Satellite': ['Regional', 'Provincial'],  // Satellite can be under Regional or Provincial
+        'Division': ['Regional', 'Provincial', 'Satellite']  // Division can be under any
+    };
+    
+    function updateParentOptions() {
+        const selectedType = typeSelect.value;
+        const allowedParentTypes = typeHierarchy[selectedType] || [];
+        
+        // Clear all options except the "No Parent" option
+        parentSelect.innerHTML = '<option value="">No Parent - This is a Root Office</option>';
+        
+        if (allowedParentTypes.length === 0) {
+            parentSelect.disabled = true;
+            return;
+        }
+        
+        parentSelect.disabled = false;
+        
+        // Filter offices that match allowed parent types (exclude self)
+        const validParents = allOffices.filter(office => 
+            allowedParentTypes.includes(office.type) && 
+            office.parent_id === null && 
+            office.id !== currentOfficeId
+        );
+        
+        // Sort by name and add to dropdown
+        validParents.sort((a, b) => a.name.localeCompare(b.name)).forEach(office => {
+            const option = document.createElement('option');
+            option.value = office.id;
+            option.textContent = office.name + ' (' + office.type + ')';
+            
+            // Preserve selection
+            if (currentParentId == office.id) {
+                option.selected = true;
+            }
+            
+            parentSelect.appendChild(option);
+        });
+    }
+    
+    // Update on type change
+    typeSelect.addEventListener('change', updateParentOptions);
+    
+    // Initial population on page load
+    updateParentOptions();
+});
+</script>
 @endsection

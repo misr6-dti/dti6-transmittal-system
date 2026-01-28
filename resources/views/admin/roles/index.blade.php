@@ -1,19 +1,22 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-end mb-4 no-print">
-    <div>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-1">
-                <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-navy">Dashboard</a></li>
-                <li class="breadcrumb-item active">User Roles</li>
-            </ol>
-        </nav>
-        <h2 class="fw-extrabold mb-0">User Roles</h2>
+<div class="mb-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-2">
+            <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-navy">Dashboard</a></li>
+            <li class="breadcrumb-item active">User Roles</li>
+        </ol>
+    </nav>
+    <div class="d-flex justify-content-between align-items-start no-print">
+        <div>
+            <h2 class="fw-extrabold mb-1">User Roles</h2>
+            <p class="text-muted mb-0 small">Manage system roles and their permissions.</p>
+        </div>
+        <a href="{{ route('admin.roles.create') }}" class="btn btn-navy d-flex align-items-center">
+            <i class="bi bi-shield-plus me-2"></i>New Role
+        </a>
     </div>
-    <a href="{{ route('admin.roles.create') }}" class="btn btn-navy d-flex align-items-center">
-        <i class="bi bi-shield-plus me-2"></i>New Role
-    </a>
 </div>
 
 <div class="row">
@@ -21,7 +24,7 @@
         <div class="card shadow-sm border-0">
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
+                    <table class="table table-hover align-middle mb-0 data-table">
                         <thead>
                             <tr>
                                 <th class="ps-4">Role Name</th>
