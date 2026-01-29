@@ -6,6 +6,7 @@ use App\Models\Transmittal;
 use App\Models\TransmittalItem;
 use App\Models\TransmittalLog;
 use App\Models\Office;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -162,12 +163,8 @@ class TransmittalController extends Controller
             ]);
 
             if ($status === 'Submitted') {
-                \App\Models\Notification::create([
-                    'office_id' => $transmittal->receiver_office_id,
-                    'title' => 'New Incoming Transmittal',
-                    'message' => "Transmittal #{$transmittal->reference_number} has been sent from " . (Auth::user()->office->code ?? 'Unknown Office'),
-                    'link' => route('transmittals.show', $transmittal),
-                ]);
+                // Use NotificationService for cleaner notification creation
+                NotificationService::notifyTransmittalCreated($transmittal);
             }
 
             DB::commit();
@@ -301,12 +298,8 @@ class TransmittalController extends Controller
                 'description' => "Transmittal #{$transmittal->reference_number} marked as Received by " . Auth::user()->name,
             ]);
 
-            \App\Models\Notification::create([
-                'office_id' => $transmittal->sender_office_id,
-                'title' => 'Transmittal Received',
-                'message' => "Transmittal #{$transmittal->reference_number} has been acknowledged by " . (Auth::user()->office->code ?? 'Unknown Office'),
-                'link' => route('transmittals.show', $transmittal),
-            ]);
+            // Use NotificationService for cleaner notification creation
+            NotificationService::notifyTransmittalReceived($transmittal);
 
             DB::commit();
             return redirect()->route('transmittals.index')->with('success', 'Transmittal marked as received.');
