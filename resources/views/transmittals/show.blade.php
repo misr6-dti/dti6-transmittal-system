@@ -174,10 +174,13 @@
                     </div>
                     
                     <h5 class="fw-bold mb-1">
-                        @if($transmittal->senderOffice->type === 'Regional')
+                        @php
+                            $displayOffice = $transmittal->senderOffice->getDisplayOffice();
+                        @endphp
+                        @if($displayOffice->type === 'Regional')
                             DTI - Regional Office 6
                         @else
-                            DTI - {{ str_ireplace('DTI ', '', $transmittal->senderOffice->name) }}
+                            DTI - {{ str_ireplace('DTI ', '', $displayOffice->name) }}
                         @endif
                     </h5>
                     <p class="text-muted small mb-0">Region VI - Western Visayas</p>
@@ -189,13 +192,13 @@
                     <div class="row g-0">
                         <div class="col-sm-6">
                             <div class="small fw-bold text-uppercase text-muted mb-2">Originating Office</div>
-                            <div class="h5 fw-bold mb-1">{{ $transmittal->senderOffice->name }}</div>
+                            <div class="h5 fw-bold mb-1">{{ $transmittal->senderOffice->code }}</div>
                             <div class="small text-muted">Sent by: {{ $transmittal->sender->name }}</div>
                             <div class="small text-muted">Date: {{ \Carbon\Carbon::parse($transmittal->transmittal_date)->format('F d, Y') }}</div>
                         </div>
                         <div class="col-sm-6 text-sm-end">
                             <div class="small fw-bold text-uppercase text-muted mb-2">Destination Office</div>
-                            <div class="h5 fw-bold mb-1">{{ $transmittal->receiverOffice->name }}</div>
+                            <div class="h5 fw-bold mb-1">{{ $transmittal->receiverOffice->code }}</div>
                             <div class="mt-2 text-sm-end no-print">
                                 <span class="status-badge bg-{{ strtolower($transmittal->status) }} fs-6">
                                     {{ $transmittal->status }}

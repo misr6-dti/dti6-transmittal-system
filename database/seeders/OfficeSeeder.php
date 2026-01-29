@@ -12,8 +12,14 @@ class OfficeSeeder extends Seeder
      */
     public function run(): void
     {
-        $offices = [
-            ['name' => 'Regional Office VI (RO VI)', 'type' => 'Regional', 'code' => 'RO6'],
+        // First, create Regional Office
+        $regionalOffice = Office::updateOrCreate(
+            ['code' => 'RO6'],
+            ['name' => 'Regional Office VI (RO VI)', 'type' => 'Regional', 'parent_id' => null]
+        );
+
+        // Create provincial offices with Regional Office as parent
+        $provincialOffices = [
             ['name' => 'DTI Iloilo provincial Office', 'type' => 'Provincial', 'code' => 'PO-ILO'],
             ['name' => 'DTI Capiz Provincial Office', 'type' => 'Provincial', 'code' => 'PO-CAP'],
             ['name' => 'DTI Aklan Provincial Office', 'type' => 'Provincial', 'code' => 'PO-AKL'],
@@ -22,8 +28,11 @@ class OfficeSeeder extends Seeder
             ['name' => 'DTI Negros Occidental Provincial Office', 'type' => 'Provincial', 'code' => 'PO-NEG'],
         ];
 
-        foreach ($offices as $office) {
-            Office::updateOrCreate(['code' => $office['code']], $office);
+        foreach ($provincialOffices as $office) {
+            Office::updateOrCreate(
+                ['code' => $office['code']],
+                array_merge($office, ['parent_id' => $regionalOffice->id])
+            );
         }
     }
 }

@@ -1,16 +1,24 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-end mb-4 no-print">
-    <div>
-        <h2 class="fw-extrabold mb-1">Transmittal Ledger</h2>
-        <p class="text-muted small mb-0">Track and manage all document movements across Region VI offices.</p>
+<div class="mb-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-2">
+            <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-navy">Dashboard</a></li>
+            <li class="breadcrumb-item active">Transmittals</li>
+        </ol>
+    </nav>
+    <div class="d-flex justify-content-between align-items-start no-print">
+        <div>
+            <h2 class="fw-extrabold mb-1">Transmittal Ledger</h2>
+            <p class="text-muted mb-0 small">Track and manage all document movements across Region VI offices.</p>
+        </div>
+        @can('create', App\Models\Transmittal::class)
+        <a href="{{ route('transmittals.create') }}" class="btn btn-navy d-flex align-items-center">
+            <i class="bi bi-plus-circle me-2"></i>New Entry
+        </a>
+        @endcan
     </div>
-    @can('create', App\Models\Transmittal::class)
-    <a href="{{ route('transmittals.create') }}" class="btn btn-navy d-flex align-items-center">
-        <i class="bi bi-plus-circle me-2"></i>New Entry
-    </a>
-    @endcan
 </div>
 
 <div class="card shadow-sm mb-4 no-print">

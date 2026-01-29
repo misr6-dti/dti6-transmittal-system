@@ -21,5 +21,12 @@
         "lodash": "^4.17.19",
         "postcss": "^8.1.14",
         "tailwindcss": "^3.1.0"
+    },
+    "dependencies": {
+        "datatables.net": "^2.3.6",
+        "datatables.net-bs5": "^2.3.6",
+        "datatables.net-responsive": "^3.0.7",
+        "datatables.net-responsive-bs5": "^3.0.7",
+        "jquery": "^4.0.0"
     }
 }

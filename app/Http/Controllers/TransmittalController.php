@@ -9,9 +9,9 @@ use App\Models\Office;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Str;
-
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class TransmittalController extends Controller
@@ -70,7 +70,15 @@ class TransmittalController extends Controller
     public function create()
     {
         $this->authorize('create', Transmittal::class);
-        $offices = Office::where('id', '!=', Auth::user()->office_id)->get();
+        // Get ALL offices first for hierarchy building
+        $allOffices = Office::all();
+        // Format with hierarchy
+        $formattedOffices = $this->formatOfficesHierarchy($allOffices);
+        // Now exclude user's own office from the final list
+        $offices = $formattedOffices->filter(function($office) {
+            return $office->id != Auth::user()->office_id;
+        })->values();
+        
         $userOffice = Auth::user()->office;
         
         // Generate a reference number: T-OFFICE-YEAR-SEQUENCE_NUMBER
@@ -180,6 +188,25 @@ class TransmittalController extends Controller
         return view('transmittals.show', compact('transmittal', 'qrcode'));
     }
 
+    public function publicTrack($encrypted_reference)
+    {
+        try {
+            $reference_number = Crypt::decryptString($encrypted_reference);
+        } catch (\Exception $e) {
+            return view('transmittals.public-track', ['transmittal' => null, 'error' => 'Invalid or corrupted QR code.']);
+        }
+
+        $transmittal = Transmittal::where('reference_number', $reference_number)->first();
+
+        if (!$transmittal) {
+            return view('transmittals.public-track', ['transmittal' => null, 'error' => 'Transmittal not found.']);
+        }
+
+        $transmittal->load(['senderOffice', 'receiverOffice', 'items']);
+
+        return view('transmittals.public-track', compact('transmittal'));
+    }
+
     public function edit(Transmittal $transmittal)
     {
         $this->authorize('update', $transmittal);
@@ -189,7 +216,15 @@ class TransmittalController extends Controller
             }
         }
 
-        $offices = Office::where('id', '!=', Auth::user()->office_id)->get();
+        // Get ALL offices first for hierarchy building
+        $allOffices = Office::all();
+        // Format with hierarchy
+        $formattedOffices = $this->formatOfficesHierarchy($allOffices);
+        // Now exclude user's own office from the final list
+        $offices = $formattedOffices->filter(function($office) {
+            return $office->id != Auth::user()->office_id;
+        })->values();
+        
         return view('transmittals.edit', compact('transmittal', 'offices'));
     }
 
@@ -313,16 +348,9 @@ class TransmittalController extends Controller
 
     private function generateQrCode(Transmittal $transmittal)
     {
-        // Ensure verification token exists
-        if (!$transmittal->verification_token) {
-            $transmittal->update(['verification_token' => Str::random(32)]);
-        }
-
-        $data = implode('|', [
-            $transmittal->reference_number,
-            $transmittal->verification_token,
-            'DTI6-TMS'
-        ]);
+        // Generate QR code that points to public tracking page with encrypted reference number
+        $encrypted_reference = Crypt::encryptString($transmittal->reference_number);
+        $trackingUrl = route('transmittals.public-track', ['encrypted_reference' => $encrypted_reference]);
 
         $options = new \chillerlan\QRCode\QROptions([
             'imageTransparent' => false,
@@ -331,7 +359,7 @@ class TransmittalController extends Controller
             'eccLevel' => \chillerlan\QRCode\QRCode::ECC_L,
         ]);
 
-        $out = (new \chillerlan\QRCode\QRCode($options))->render($data);
+        $out = (new \chillerlan\QRCode\QRCode($options))->render($trackingUrl);
         
         return $out;
     }
@@ -367,5 +395,41 @@ class TransmittalController extends Controller
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Error updating items'], 500);
         }
+    }
+
+    /**
+     * Format offices with hierarchy for dropdown display
+     * Returns collection with prefixed codes showing the office structure
+     */
+    private function formatOfficesHierarchy($offices, $parentId = null, $prefix = '')
+    {
+        $result = [];
+        
+        // Convert to array for easier iteration
+        $officesArray = $offices->toArray();
+        
+        foreach ($officesArray as $office) {
+            // Only show offices matching current parent level
+            if (($office['parent_id'] === $parentId) || ($parentId === null && empty($office['parent_id']))) {
+                // Create display name with hierarchy using code
+                $displayName = $prefix . $office['code'] . ' (' . $office['type'] . ')';
+                
+                // Create a new object with display_name
+                $officeObj = (object) $office;
+                $officeObj->display_name = $displayName;
+                $result[] = $officeObj;
+                
+                // Recursively add children with increased indentation
+                $childResult = $this->formatOfficesHierarchy(
+                    $offices, 
+                    $office['id'], 
+                    $prefix . '&nbsp;&nbsp;&nbsp;'
+                );
+                // Convert collection to array for merging
+                $result = array_merge($result, $childResult->toArray());
+            }
+        }
+        
+        return collect($result);
     }
 }

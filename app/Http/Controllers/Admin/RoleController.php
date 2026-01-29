@@ -10,9 +10,15 @@ use Illuminate\Support\Str;
 
 class RoleController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $roles = Role::with(['permissions'])->withCount('users')->get();
+        $query = Role::with(['permissions'])->withCount('users');
+
+        if ($request->search) {
+            $query->where('name', 'like', "%{$request->search}%");
+        }
+
+        $roles = $query->latest()->paginate(10);
         return view('admin.roles.index', compact('roles'));
     }
 
