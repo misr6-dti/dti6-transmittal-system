@@ -385,6 +385,11 @@
                             <!-- Notifications will be injected here -->
                             <li class="p-4 text-center text-muted small">No notifications</li>
                         </div>
+                        <li class="border-top">
+                            <a href="{{ route('notifications.index') }}" class="dropdown-item rounded-0 text-center py-3 small fw-bold text-primary">
+                                View all notifications
+                            </a>
+                        </li>
                     </ul>
                 </div>
                 @endauth

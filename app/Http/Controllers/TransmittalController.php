@@ -6,6 +6,7 @@ use App\Models\Transmittal;
 use App\Models\TransmittalItem;
 use App\Models\TransmittalLog;
 use App\Models\Office;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -61,10 +62,33 @@ class TransmittalController extends Controller
             });
         }
 
-        $transmittals = $query->with(['items'])->latest()->paginate(5);
-        $offices = Office::all();
+        // Handle sorting
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortOrder = $request->get('sort_order', 'desc');
+        
+        // Validate sort parameters to prevent injection
+        $allowedSortFields = ['reference_number', 'transmittal_date', 'status', 'created_at', 'sender_office_id', 'receiver_office_id'];
+        $allowedSortOrders = ['asc', 'desc'];
+        
+        if (!in_array($sortBy, $allowedSortFields)) {
+            $sortBy = 'created_at';
+        }
+        if (!in_array($sortOrder, $allowedSortOrders)) {
+            $sortOrder = 'desc';
+        }
+        
+        $query->orderBy($sortBy, $sortOrder);
 
-        return view('transmittals.index', compact('transmittals', 'offices'));
+        $transmittals = $query->with(['items'])->paginate(10);
+        $offices = Office::all();
+        
+        // Pass sort parameters to view
+        $sort = [
+            'by' => $sortBy,
+            'order' => $sortOrder
+        ];
+
+        return view('transmittals.index', compact('transmittals', 'offices', 'sort'));
     }
 
     public function create()
@@ -162,12 +186,8 @@ class TransmittalController extends Controller
             ]);
 
             if ($status === 'Submitted') {
-                \App\Models\Notification::create([
-                    'office_id' => $transmittal->receiver_office_id,
-                    'title' => 'New Incoming Transmittal',
-                    'message' => "Transmittal #{$transmittal->reference_number} has been sent from " . (Auth::user()->office->code ?? 'Unknown Office'),
-                    'link' => route('transmittals.show', $transmittal),
-                ]);
+                // Use NotificationService for cleaner notification creation
+                NotificationService::notifyTransmittalCreated($transmittal);
             }
 
             DB::commit();
@@ -301,12 +321,8 @@ class TransmittalController extends Controller
                 'description' => "Transmittal #{$transmittal->reference_number} marked as Received by " . Auth::user()->name,
             ]);
 
-            \App\Models\Notification::create([
-                'office_id' => $transmittal->sender_office_id,
-                'title' => 'Transmittal Received',
-                'message' => "Transmittal #{$transmittal->reference_number} has been acknowledged by " . (Auth::user()->office->code ?? 'Unknown Office'),
-                'link' => route('transmittals.show', $transmittal),
-            ]);
+            // Use NotificationService for cleaner notification creation
+            NotificationService::notifyTransmittalReceived($transmittal);
 
             DB::commit();
             return redirect()->route('transmittals.index')->with('success', 'Transmittal marked as received.');

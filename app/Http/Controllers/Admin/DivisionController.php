@@ -9,10 +9,41 @@ use Illuminate\Http\Request;
 
 class DivisionController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $divisions = Division::with('office')->latest()->get();
-        return view('admin.divisions.index', compact('divisions'));
+        $query = Division::with('office');
+
+        if ($request->search) {
+            $query->where('name', 'like', "%{$request->search}%")
+                  ->orWhere('code', 'like', "%{$request->search}%");
+        }
+
+        // Handle sorting
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortOrder = $request->get('sort_order', 'desc');
+        
+        // Validate sort parameters to prevent injection
+        $allowedSortFields = ['name', 'code', 'office_id', 'created_at'];
+        $allowedSortOrders = ['asc', 'desc'];
+        
+        if (!in_array($sortBy, $allowedSortFields)) {
+            $sortBy = 'created_at';
+        }
+        if (!in_array($sortOrder, $allowedSortOrders)) {
+            $sortOrder = 'desc';
+        }
+        
+        $query->orderBy($sortBy, $sortOrder);
+        
+        $divisions = $query->paginate(10);
+        
+        // Pass sort parameters to view
+        $sort = [
+            'by' => $sortBy,
+            'order' => $sortOrder
+        ];
+        
+        return view('admin.divisions.index', compact('divisions', 'sort'));
     }
 
     public function create()

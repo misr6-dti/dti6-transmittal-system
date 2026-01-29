@@ -8,10 +8,41 @@ use Illuminate\Http\Request;
 
 class OfficeController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $offices = Office::latest()->get();
-        return view('admin.offices.index', compact('offices'));
+        $query = Office::query();
+
+        if ($request->search) {
+            $query->where('name', 'like', "%{$request->search}%")
+                  ->orWhere('code', 'like', "%{$request->search}%");
+        }
+
+        // Handle sorting
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortOrder = $request->get('sort_order', 'desc');
+        
+        // Validate sort parameters to prevent injection
+        $allowedSortFields = ['name', 'code', 'type', 'created_at'];
+        $allowedSortOrders = ['asc', 'desc'];
+        
+        if (!in_array($sortBy, $allowedSortFields)) {
+            $sortBy = 'created_at';
+        }
+        if (!in_array($sortOrder, $allowedSortOrders)) {
+            $sortOrder = 'desc';
+        }
+        
+        $query->orderBy($sortBy, $sortOrder);
+        
+        $offices = $query->paginate(10);
+        
+        // Pass sort parameters to view
+        $sort = [
+            'by' => $sortBy,
+            'order' => $sortOrder
+        ];
+        
+        return view('admin.offices.index', compact('offices', 'sort'));
     }
 
     public function create()

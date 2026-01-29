@@ -70,12 +70,57 @@
         <table class="table mb-0 align-middle">
             <thead>
                 <tr>
-                    <th class="ps-4">Reference #</th>
-                    <th>Execution Date</th>
-                    <th>Origin</th>
-                    <th>Destination</th>
+                    <th class="ps-4" style="cursor: pointer;">
+                        <a href="{{ route('transmittals.index', array_merge(request()->input(), ['sort_by' => 'reference_number', 'sort_order' => ($sort['by'] === 'reference_number' && $sort['order'] === 'asc') ? 'desc' : 'asc'])) }}" class="text-decoration-none text-dark fw-bold d-flex align-items-center">
+                            Reference #
+                            @if($sort['by'] === 'reference_number')
+                                <i class="bi bi-arrow-{{ $sort['order'] === 'asc' ? 'up' : 'down' }} ms-2 small"></i>
+                            @else
+                                <i class="bi bi-arrow-down-up ms-2 small text-muted" style="opacity: 0.3;"></i>
+                            @endif
+                        </a>
+                    </th>
+                    <th style="cursor: pointer;">
+                        <a href="{{ route('transmittals.index', array_merge(request()->input(), ['sort_by' => 'transmittal_date', 'sort_order' => ($sort['by'] === 'transmittal_date' && $sort['order'] === 'asc') ? 'desc' : 'asc'])) }}" class="text-decoration-none text-dark fw-bold d-flex align-items-center">
+                            Execution Date
+                            @if($sort['by'] === 'transmittal_date')
+                                <i class="bi bi-arrow-{{ $sort['order'] === 'asc' ? 'up' : 'down' }} ms-2 small"></i>
+                            @else
+                                <i class="bi bi-arrow-down-up ms-2 small text-muted" style="opacity: 0.3;"></i>
+                            @endif
+                        </a>
+                    </th>
+                    <th style="cursor: pointer;">
+                        <a href="{{ route('transmittals.index', array_merge(request()->input(), ['sort_by' => 'sender_office_id', 'sort_order' => ($sort['by'] === 'sender_office_id' && $sort['order'] === 'asc') ? 'desc' : 'asc'])) }}" class="text-decoration-none text-dark fw-bold d-flex align-items-center">
+                            Origin
+                            @if($sort['by'] === 'sender_office_id')
+                                <i class="bi bi-arrow-{{ $sort['order'] === 'asc' ? 'up' : 'down' }} ms-2 small"></i>
+                            @else
+                                <i class="bi bi-arrow-down-up ms-2 small text-muted" style="opacity: 0.3;"></i>
+                            @endif
+                        </a>
+                    </th>
+                    <th style="cursor: pointer;">
+                        <a href="{{ route('transmittals.index', array_merge(request()->input(), ['sort_by' => 'receiver_office_id', 'sort_order' => ($sort['by'] === 'receiver_office_id' && $sort['order'] === 'asc') ? 'desc' : 'asc'])) }}" class="text-decoration-none text-dark fw-bold d-flex align-items-center">
+                            Destination
+                            @if($sort['by'] === 'receiver_office_id')
+                                <i class="bi bi-arrow-{{ $sort['order'] === 'asc' ? 'up' : 'down' }} ms-2 small"></i>
+                            @else
+                                <i class="bi bi-arrow-down-up ms-2 small text-muted" style="opacity: 0.3;"></i>
+                            @endif
+                        </a>
+                    </th>
                     <th>Description</th>
-                    <th>Status</th>
+                    <th style="cursor: pointer;">
+                        <a href="{{ route('transmittals.index', array_merge(request()->input(), ['sort_by' => 'status', 'sort_order' => ($sort['by'] === 'status' && $sort['order'] === 'asc') ? 'desc' : 'asc'])) }}" class="text-decoration-none text-dark fw-bold d-flex align-items-center">
+                            Status
+                            @if($sort['by'] === 'status')
+                                <i class="bi bi-arrow-{{ $sort['order'] === 'asc' ? 'up' : 'down' }} ms-2 small"></i>
+                            @else
+                                <i class="bi bi-arrow-down-up ms-2 small text-muted" style="opacity: 0.3;"></i>
+                            @endif
+                        </a>
+                    </th>
                     <th class="pe-4 text-end">Actions</th>
                 </tr>
             </thead>
@@ -113,15 +158,15 @@
                     </td>
                     <td class="pe-4 text-end">
                         <div class="btn-group shadow-sm" style="border-radius: 0.5rem; overflow: hidden;">
-                            <a href="{{ route('transmittals.show', $t) }}" class="btn btn-sm btn-white border px-3 d-flex align-items-center justify-content-center" title="View"><i class="bi bi-eye"></i></a>
+                            <a href="{{ route('transmittals.show', $t) }}" class="btn btn-sm btn-info text-white d-flex align-items-center justify-content-center px-2" title="View" style="width: 32px; height: 32px;"><i class="bi bi-eye"></i></a>
                             
                             @can('update', $t)
-                                <a href="{{ route('transmittals.edit', $t) }}" class="btn btn-sm btn-white border px-3 d-flex align-items-center justify-content-center" title="Edit"><i class="bi bi-pencil"></i></a>
+                                <a href="{{ route('transmittals.edit', $t) }}" class="btn btn-sm btn-warning text-white d-flex align-items-center justify-content-center px-2" title="Edit" style="width: 32px; height: 32px;"><i class="bi bi-pencil"></i></a>
                             @endcan
 
                             @can('delete', $t)
                                 <button type="button" 
-                                    class="btn btn-sm btn-white border px-3 text-danger d-flex align-items-center justify-content-center" 
+                                    class="btn btn-sm btn-danger text-white d-flex align-items-center justify-content-center px-2" 
                                     title="Delete Record"
                                     data-bs-toggle="modal" 
                                     data-bs-target="#confirmationModal"
@@ -130,14 +175,15 @@
                                     data-title="Confirm Delete"
                                     data-message="Are you sure you want to permanently delete this transmittal record? This action cannot be undone."
                                     data-btn-class="btn-danger"
-                                    data-btn-text="Delete">
+                                    data-btn-text="Delete"
+                                    style="width: 32px; height: 32px;">
                                     <i class="bi bi-trash"></i>
                                 </button>
                             @endcan
 
                             @can('receive', $t)
                                 <button type="button" 
-                                    class="btn btn-sm btn-success border px-3 text-white d-flex align-items-center justify-content-center" 
+                                    class="btn btn-sm btn-success text-white d-flex align-items-center justify-content-center px-2" 
                                     title="Confirm Receipt"
                                     data-bs-toggle="modal" 
                                     data-bs-target="#confirmationModal"
@@ -146,8 +192,9 @@
                                     data-title="Acknowledge Receipt"
                                     data-message="By confirming, you officially acknowledge that you have physically received the hard copy documents for Transmittal #{{ $t->reference_number }}."
                                     data-btn-class="btn-success"
-                                    data-btn-text="Confirm Receipt">
-                                    <i class="bi bi-check2-circle me-1"></i>Receive
+                                    data-btn-text="Confirm Receipt"
+                                    style="width: 32px; height: 32px; padding: 0.375rem !important;">
+                                    <i class="bi bi-check2-circle"></i>
                                 </button>
                             @endcan
                         </div>
@@ -166,7 +213,21 @@
     </div>
     @if($transmittals->hasPages())
     <div class="card-footer bg-white py-3 px-4">
-        {{ $transmittals->appends(request()->input())->links() }}
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div class="text-muted small">
+                Showing <strong>{{ $transmittals->firstItem() ?? 0 }}</strong> to <strong>{{ $transmittals->lastItem() ?? 0 }}</strong> 
+                of <strong>{{ $transmittals->total() }}</strong> results
+            </div>
+            <div>
+                {{ $transmittals->appends(request()->input())->links() }}
+            </div>
+        </div>
+    </div>
+    @else
+    <div class="card-footer bg-white py-3 px-4">
+        <div class="text-muted small">
+            Showing <strong>{{ $transmittals->count() }}</strong> result{{ $transmittals->count() !== 1 ? 's' : '' }}
+        </div>
     </div>
     @endif
 </div>

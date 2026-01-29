@@ -11,8 +11,7 @@ class AuditLogController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
-        $query = TransmittalLog::with(['user.office', 'transmittal.senderOffice', 'transmittal.receiverOffice'])
-            ->latest();
+        $query = TransmittalLog::with(['user.office', 'transmittal.senderOffice', 'transmittal.receiverOffice']);
 
         // Standard Office Isolation for non-admins
         if (!$user->hasAnyRole(['Super Admin', 'Regional MIS'])) {
@@ -43,10 +42,48 @@ class AuditLogController extends Controller
             }
         }
 
+        // Handle sorting
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortOrder = $request->get('sort_order', 'desc');
+        
+        // Validate sort parameters to prevent injection
+        $allowedSortFields = ['created_at', 'action', 'user_id', 'transmittal_id', 'sender_office_id', 'receiver_office_id'];
+        $allowedSortOrders = ['asc', 'desc'];
+        
+        if (!in_array($sortBy, $allowedSortFields)) {
+            $sortBy = 'created_at';
+        }
+        if (!in_array($sortOrder, $allowedSortOrders)) {
+            $sortOrder = 'desc';
+        }
+        
+        // Handle sorting through relationships
+        if ($sortBy === 'transmittal_id') {
+            $query->join('transmittals', 'transmittal_logs.transmittal_id', '=', 'transmittals.id')
+                  ->select('transmittal_logs.*')
+                  ->orderBy('transmittals.reference_number', $sortOrder);
+        } elseif ($sortBy === 'sender_office_id') {
+            $query->join('transmittals', 'transmittal_logs.transmittal_id', '=', 'transmittals.id')
+                  ->select('transmittal_logs.*')
+                  ->orderBy('transmittals.sender_office_id', $sortOrder);
+        } elseif ($sortBy === 'receiver_office_id') {
+            $query->join('transmittals', 'transmittal_logs.transmittal_id', '=', 'transmittals.id')
+                  ->select('transmittal_logs.*')
+                  ->orderBy('transmittals.receiver_office_id', $sortOrder);
+        } else {
+            $query->orderBy($sortBy, $sortOrder);
+        }
+
         $logs = $query->paginate(10);
         $offices = \App\Models\Office::all();
+        
+        // Pass sort parameters to view
+        $sort = [
+            'by' => $sortBy,
+            'order' => $sortOrder
+        ];
 
-        return view('audit.index', compact('logs', 'offices'));
+        return view('audit.index', compact('logs', 'offices', 'sort'));
     }
 
     public function show(TransmittalLog $transmittalLog)
