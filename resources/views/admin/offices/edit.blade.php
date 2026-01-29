@@ -33,7 +33,6 @@
                                 <option value="Regional" {{ old('type', $office->type) == 'Regional' ? 'selected' : '' }}>Regional Office</option>
                                 <option value="Provincial" {{ old('type', $office->type) == 'Provincial' ? 'selected' : '' }}>Provincial Office</option>
                                 <option value="Satellite" {{ old('type', $office->type) == 'Satellite' ? 'selected' : '' }}>Satellite Office</option>
-                                <option value="Division" {{ old('type', $office->type) == 'Division' ? 'selected' : '' }}>Division</option>
                             </select>
                             @error('type')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
@@ -80,7 +79,6 @@ document.addEventListener('DOMContentLoaded', function() {
         'Regional': [],  // Regional can only be root
         'Provincial': ['Regional'],  // Provincial can be under Regional
         'Satellite': ['Regional', 'Provincial'],  // Satellite can be under Regional or Provincial
-        'Division': ['Regional', 'Provincial', 'Satellite']  // Division can be under any
     };
     
     function updateParentOptions() {
@@ -97,12 +95,21 @@ document.addEventListener('DOMContentLoaded', function() {
         
         parentSelect.disabled = false;
         
-        // Filter offices that match allowed parent types (exclude self)
-        const validParents = allOffices.filter(office => 
-            allowedParentTypes.includes(office.type) && 
-            office.parent_id === null && 
-            office.id !== currentOfficeId
-        );
+        // For Satellite Office, show all regional and provincial offices
+        // Otherwise, show only root offices of allowed parent types
+        let validParents;
+        if (selectedType === 'Satellite') {
+            validParents = allOffices.filter(office => 
+                (office.type === 'Regional' || office.type === 'Provincial') && 
+                office.id !== currentOfficeId
+            );
+        } else {
+            validParents = allOffices.filter(office => 
+                allowedParentTypes.includes(office.type) && 
+                office.parent_id === null && 
+                office.id !== currentOfficeId
+            );
+        }
         
         // Sort by name and add to dropdown
         validParents.sort((a, b) => a.name.localeCompare(b.name)).forEach(office => {

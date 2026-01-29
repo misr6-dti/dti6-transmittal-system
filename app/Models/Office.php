@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use App\Models\Transmittal;
+use App\Models\Division;
 
 class Office extends Model
 {
@@ -16,6 +17,11 @@ class Office extends Model
     public function users()
     {
         return $this->hasMany(User::class);
+    }
+
+    public function divisions()
+    {
+        return $this->hasMany(Division::class);
     }
 
     public function parent()
@@ -49,7 +55,7 @@ class Office extends Model
             return $this;
         }
 
-        // If this is a Satellite or Division, traverse up to find Regional/Provincial parent
+        // If this is a Satellite, traverse up to find Regional/Provincial parent
         $current = $this;
         while ($current->parent_id) {
             $current = $current->parent;
@@ -62,3 +68,4 @@ class Office extends Model
         return $this;
     }
 }
+

@@ -7,6 +7,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Public Tracking Route (no authentication required)
+Route::get('/track/{encrypted_reference}', [App\Http\Controllers\TransmittalController::class, 'publicTrack'])->name('transmittals.public-track');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/stats', [App\Http\Controllers\DashboardController::class, 'stats'])->name('dashboard.stats');
@@ -37,6 +40,7 @@ Route::get('/support', function () { return view('pages.support'); })->name('sup
         Route::resource('users', App\Http\Controllers\Admin\UserController::class);
         Route::resource('roles', App\Http\Controllers\Admin\RoleController::class);
         Route::resource('offices', App\Http\Controllers\Admin\OfficeController::class);
+        Route::resource('divisions', App\Http\Controllers\Admin\DivisionController::class);
     });
 });
 

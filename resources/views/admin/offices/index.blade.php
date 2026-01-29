@@ -53,9 +53,13 @@
                                         <a href="{{ route('admin.offices.edit', $office) }}" class="btn btn-sm btn-outline-primary" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <a href="{{ route('admin.offices.destroy', $office) }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure?')" title="Delete">
-                                            <i class="bi bi-trash"></i>
-                                        </a>
+                                        <form action="{{ route('admin.offices.destroy', $office) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this office?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                             @empty

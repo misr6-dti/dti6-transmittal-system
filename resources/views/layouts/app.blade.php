@@ -356,6 +356,8 @@
                                         class="bi bi-shield-lock me-2"></i>User Roles</a></li>
                             <li><a class="dropdown-item" href="{{ route('admin.offices.index') }}"><i
                                         class="bi bi-building me-2"></i>Office Management</a></li>
+                            <li><a class="dropdown-item" href="{{ route('admin.divisions.index') }}"><i
+                                        class="bi bi-diagram-3 me-2"></i>Division Management</a></li>
                         </ul>
                     </li>
                     @endhasanyrole

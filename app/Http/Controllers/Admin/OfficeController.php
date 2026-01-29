@@ -33,6 +33,11 @@ class OfficeController extends Controller
         return redirect()->route('admin.offices.index')->with('success', 'Office created successfully.');
     }
 
+    public function show(Office $office)
+    {
+        return view('admin.offices.show', compact('office'));
+    }
+
     public function edit(Office $office)
     {
         return view('admin.offices.edit', compact('office'));
@@ -54,7 +59,36 @@ class OfficeController extends Controller
 
     public function destroy(Office $office)
     {
-        // Add check if office has transmittals or users
+        // Check if office has sent transmittals
+        if ($office->sentTransmittals()->exists()) {
+            return redirect()->route('admin.offices.index')
+                           ->with('error', 'Cannot delete office with sent transmittals.');
+        }
+
+        // Check if office has received transmittals
+        if ($office->receivedTransmittals()->exists()) {
+            return redirect()->route('admin.offices.index')
+                           ->with('error', 'Cannot delete office with received transmittals.');
+        }
+
+        // Check if office has child offices
+        if ($office->children()->exists()) {
+            return redirect()->route('admin.offices.index')
+                           ->with('error', 'Cannot delete office with child offices.');
+        }
+
+        // Check if office has assigned users
+        if ($office->users()->exists()) {
+            return redirect()->route('admin.offices.index')
+                           ->with('error', 'Cannot delete office with assigned users.');
+        }
+
+        // Check if office has divisions
+        if ($office->divisions()->exists()) {
+            return redirect()->route('admin.offices.index')
+                           ->with('error', 'Cannot delete office with assigned divisions.');
+        }
+
         $office->delete();
         return redirect()->route('admin.offices.index')->with('success', 'Office deleted successfully.');
     }

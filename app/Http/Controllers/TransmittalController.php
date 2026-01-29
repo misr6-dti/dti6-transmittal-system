@@ -9,9 +9,9 @@ use App\Models\Office;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Str;
-
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class TransmittalController extends Controller
@@ -188,6 +188,25 @@ class TransmittalController extends Controller
         return view('transmittals.show', compact('transmittal', 'qrcode'));
     }
 
+    public function publicTrack($encrypted_reference)
+    {
+        try {
+            $reference_number = Crypt::decryptString($encrypted_reference);
+        } catch (\Exception $e) {
+            return view('transmittals.public-track', ['transmittal' => null, 'error' => 'Invalid or corrupted QR code.']);
+        }
+
+        $transmittal = Transmittal::where('reference_number', $reference_number)->first();
+
+        if (!$transmittal) {
+            return view('transmittals.public-track', ['transmittal' => null, 'error' => 'Transmittal not found.']);
+        }
+
+        $transmittal->load(['senderOffice', 'receiverOffice', 'items']);
+
+        return view('transmittals.public-track', compact('transmittal'));
+    }
+
     public function edit(Transmittal $transmittal)
     {
         $this->authorize('update', $transmittal);
@@ -329,16 +348,9 @@ class TransmittalController extends Controller
 
     private function generateQrCode(Transmittal $transmittal)
     {
-        // Ensure verification token exists
-        if (!$transmittal->verification_token) {
-            $transmittal->update(['verification_token' => Str::random(32)]);
-        }
-
-        $data = implode('|', [
-            $transmittal->reference_number,
-            $transmittal->verification_token,
-            'DTI6-TMS'
-        ]);
+        // Generate QR code that points to public tracking page with encrypted reference number
+        $encrypted_reference = Crypt::encryptString($transmittal->reference_number);
+        $trackingUrl = route('transmittals.public-track', ['encrypted_reference' => $encrypted_reference]);
 
         $options = new \chillerlan\QRCode\QROptions([
             'imageTransparent' => false,
@@ -347,7 +359,7 @@ class TransmittalController extends Controller
             'eccLevel' => \chillerlan\QRCode\QRCode::ECC_L,
         ]);
 
-        $out = (new \chillerlan\QRCode\QRCode($options))->render($data);
+        $out = (new \chillerlan\QRCode\QRCode($options))->render($trackingUrl);
         
         return $out;
     }

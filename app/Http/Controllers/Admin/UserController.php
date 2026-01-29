@@ -12,10 +12,22 @@ use Illuminate\Validation\Rules;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::with(['office', 'roles'])->latest()->get();
-        return view('admin.users.index', compact('users'));
+        $query = User::with(['office', 'roles']);
+
+        if ($request->search) {
+            $query->where('name', 'like', "%{$request->search}%")
+                  ->orWhere('email', 'like', "%{$request->search}%");
+        }
+
+        if ($request->office_id) {
+            $query->where('office_id', $request->office_id);
+        }
+
+        $users = $query->latest()->paginate(10);
+        $offices = Office::all();
+        return view('admin.users.index', compact('users', 'offices'));
     }
 
     public function create()
