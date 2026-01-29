@@ -24,6 +24,7 @@ class Transmittal extends Model
         'status',
         'received_at',
         'verification_token',
+        'qr_token',
     ];
 
     protected static function booted()
@@ -32,6 +33,9 @@ class Transmittal extends Model
             if (empty($transmittal->verification_token)) {
                 $transmittal->verification_token = \Illuminate\Support\Str::random(32);
             }
+            if (empty($transmittal->qr_token)) {
+                $transmittal->qr_token = $transmittal->generateUniqueQrToken();
+            }
         });
     }
 
@@ -39,6 +43,15 @@ class Transmittal extends Model
         'transmittal_date' => 'date',
         'received_at' => 'datetime',
     ];
+
+    public function generateUniqueQrToken()
+    {
+        do {
+            $token = strtoupper(\Illuminate\Support\Str::random(12));
+        } while (self::where('qr_token', $token)->exists());
+        
+        return $token;
+    }
 
     public function sender()
     {

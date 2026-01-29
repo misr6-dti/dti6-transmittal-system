@@ -188,21 +188,15 @@ class TransmittalController extends Controller
         return view('transmittals.show', compact('transmittal', 'qrcode'));
     }
 
-    public function publicTrack($encrypted_reference)
+    public function publicTrack($qr_token)
     {
-        try {
-            $reference_number = Crypt::decryptString($encrypted_reference);
-        } catch (\Exception $e) {
-            return view('transmittals.public-track', ['transmittal' => null, 'error' => 'Invalid or corrupted QR code.']);
-        }
-
-        $transmittal = Transmittal::where('reference_number', $reference_number)->first();
+        $transmittal = Transmittal::where('qr_token', $qr_token)->first();
 
         if (!$transmittal) {
             return view('transmittals.public-track', ['transmittal' => null, 'error' => 'Transmittal not found.']);
         }
 
-        $transmittal->load(['senderOffice', 'receiverOffice', 'items']);
+        $transmittal->load(['senderOffice', 'receiverOffice']);
 
         return view('transmittals.public-track', compact('transmittal'));
     }
@@ -348,9 +342,13 @@ class TransmittalController extends Controller
 
     private function generateQrCode(Transmittal $transmittal)
     {
-        // Generate QR code that points to public tracking page with encrypted reference number
-        $encrypted_reference = Crypt::encryptString($transmittal->reference_number);
-        $trackingUrl = route('transmittals.public-track', ['encrypted_reference' => $encrypted_reference]);
+        // Ensure qr_token exists (for existing transmittals created before qr_token was added)
+        if (!$transmittal->qr_token) {
+            $transmittal->update(['qr_token' => $transmittal->generateUniqueQrToken()]);
+        }
+
+        // Generate QR code that points to public tracking page using short QR token
+        $trackingUrl = route('transmittals.public-track', ['qr_token' => $transmittal->qr_token]);
 
         $options = new \chillerlan\QRCode\QROptions([
             'imageTransparent' => false,

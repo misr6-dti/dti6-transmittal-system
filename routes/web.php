@@ -8,7 +8,7 @@ Route::get('/', function () {
 });
 
 // Public Tracking Route (no authentication required)
-Route::get('/track/{encrypted_reference}', [App\Http\Controllers\TransmittalController::class, 'publicTrack'])->name('transmittals.public-track');
+Route::get('/track/{qr_token}', [App\Http\Controllers\TransmittalController::class, 'publicTrack'])->name('transmittals.public-track');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
