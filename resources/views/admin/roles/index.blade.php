@@ -19,18 +19,41 @@
     </div>
 </div>
 
-<div class="row">
+<div class="card shadow-sm mb-4 no-print">
+    <div class="card-body">
+        <form action="{{ route('admin.roles.index') }}" method="GET" class="row g-2">
+            <div class="col-lg-4 col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent border-end-0"><i class="bi bi-search"></i></span>
+                    <input type="text" name="search" class="form-control border-start-0" placeholder="Search by role name..." value="{{ request('search') }}">
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-6 d-grid">
+                <a href="{{ route('admin.roles.index') }}" class="btn btn-light text-muted d-flex align-items-center justify-content-center" title="Reset Filters">Clear</a>
+            </div>
+        </form>
+    </div>
+</div>
     <div class="col-lg-12">
-        <div class="card shadow-sm border-0">
+        <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0 data-table">
-                        <thead>
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
                             <tr>
-                                <th class="ps-4">Role Name</th>
-                                <th>Permissions</th>
-                                <th>Assigned Users</th>
-                                <th class="text-end pe-4">Actions</th>
+                                <th class="ps-4 py-3" style="cursor: pointer;">
+                                    <a href="{{ route('admin.roles.index', array_merge(request()->input(), ['sort_by' => 'name', 'sort_order' => ($sort['by'] === 'name' && $sort['order'] === 'asc') ? 'desc' : 'asc'])) }}" class="text-decoration-none text-dark fw-bold d-flex align-items-center">
+                                        Role Name
+                                        @if($sort['by'] === 'name')
+                                            <i class="bi bi-arrow-{{ $sort['order'] === 'asc' ? 'up' : 'down' }} ms-2 small"></i>
+                                        @else
+                                            <i class="bi bi-arrow-down-up ms-2 small text-muted" style="opacity: 0.3;"></i>
+                                        @endif
+                                    </a>
+                                </th>
+                                <th class="py-3">Permissions</th>
+                                <th class="py-3">Assigned Users</th>
+                                <th class="pe-4 text-end py-3">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -58,13 +81,13 @@
                                     </span>
                                 </td>
                                 <td class="text-end pe-4">
-                                    <div class="btn-group">
-                                        <a href="{{ route('admin.roles.edit', $role) }}" class="btn btn-sm btn-white border shadow-sm">
+                                    <div class="btn-group shadow-sm" style="border-radius: 0.5rem; overflow: hidden;">
+                                        <a href="{{ route('admin.roles.edit', $role) }}" class="btn btn-sm btn-warning text-white d-flex align-items-center justify-content-center px-2" title="Edit Role" style="width: 32px; height: 32px;">
                                             <i class="bi bi-pencil"></i>
                                         </a>
                                         @if($role->users_count == 0)
                                         <button type="button" 
-                                            class="btn btn-sm btn-white border shadow-sm text-danger" 
+                                            class="btn btn-sm btn-danger text-white d-flex align-items-center justify-content-center px-2" 
                                             title="Delete Role"
                                             data-bs-toggle="modal" 
                                             data-bs-target="#confirmationModal"
@@ -73,7 +96,8 @@
                                             data-title="Delete Role"
                                             data-message="Are you sure you want to delete the '{{ $role->name }}' role?"
                                             data-btn-class="btn-danger"
-                                            data-btn-text="Delete">
+                                            data-btn-text="Delete"
+                                            style="width: 32px; height: 32px;">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                         @endif
@@ -85,6 +109,25 @@
                     </table>
                 </div>
             </div>
+            @if($roles->hasPages())
+            <div class="card-footer bg-white py-3 px-4">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div class="text-muted small">
+                        Showing <strong>{{ $roles->firstItem() ?? 0 }}</strong> to <strong>{{ $roles->lastItem() ?? 0 }}</strong> 
+                        of <strong>{{ $roles->total() }}</strong> role{{ $roles->total() !== 1 ? 's' : '' }}
+                    </div>
+                    <div>
+                        {{ $roles->appends(request()->input())->links() }}
+                    </div>
+                </div>
+            </div>
+            @else
+            <div class="card-footer bg-white py-3 px-4">
+                <div class="text-muted small">
+                    Showing <strong>{{ $roles->count() }}</strong> role{{ $roles->count() !== 1 ? 's' : '' }}
+                </div>
+            </div>
+            @endif
         </div>
     </div>
 </div>

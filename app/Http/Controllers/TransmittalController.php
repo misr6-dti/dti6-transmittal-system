@@ -62,10 +62,33 @@ class TransmittalController extends Controller
             });
         }
 
-        $transmittals = $query->with(['items'])->latest()->paginate(5);
-        $offices = Office::all();
+        // Handle sorting
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortOrder = $request->get('sort_order', 'desc');
+        
+        // Validate sort parameters to prevent injection
+        $allowedSortFields = ['reference_number', 'transmittal_date', 'status', 'created_at', 'sender_office_id', 'receiver_office_id'];
+        $allowedSortOrders = ['asc', 'desc'];
+        
+        if (!in_array($sortBy, $allowedSortFields)) {
+            $sortBy = 'created_at';
+        }
+        if (!in_array($sortOrder, $allowedSortOrders)) {
+            $sortOrder = 'desc';
+        }
+        
+        $query->orderBy($sortBy, $sortOrder);
 
-        return view('transmittals.index', compact('transmittals', 'offices'));
+        $transmittals = $query->with(['items'])->paginate(10);
+        $offices = Office::all();
+        
+        // Pass sort parameters to view
+        $sort = [
+            'by' => $sortBy,
+            'order' => $sortOrder
+        ];
+
+        return view('transmittals.index', compact('transmittals', 'offices', 'sort'));
     }
 
     public function create()

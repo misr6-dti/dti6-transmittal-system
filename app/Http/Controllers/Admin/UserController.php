@@ -25,9 +25,33 @@ class UserController extends Controller
             $query->where('office_id', $request->office_id);
         }
 
-        $users = $query->latest()->paginate(10);
+        // Handle sorting
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortOrder = $request->get('sort_order', 'desc');
+        
+        // Validate sort parameters to prevent injection
+        $allowedSortFields = ['name', 'email', 'office_id', 'created_at'];
+        $allowedSortOrders = ['asc', 'desc'];
+        
+        if (!in_array($sortBy, $allowedSortFields)) {
+            $sortBy = 'created_at';
+        }
+        if (!in_array($sortOrder, $allowedSortOrders)) {
+            $sortOrder = 'desc';
+        }
+        
+        $query->orderBy($sortBy, $sortOrder);
+
+        $users = $query->paginate(10);
         $offices = Office::all();
-        return view('admin.users.index', compact('users', 'offices'));
+        
+        // Pass sort parameters to view
+        $sort = [
+            'by' => $sortBy,
+            'order' => $sortOrder
+        ];
+        
+        return view('admin.users.index', compact('users', 'offices', 'sort'));
     }
 
     public function create()

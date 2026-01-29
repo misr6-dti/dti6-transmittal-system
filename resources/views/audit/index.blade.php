@@ -63,16 +63,70 @@
 <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
     <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0 data-table">
+            <table class="table table-hover align-middle mb-0">
                 <thead class="bg-light">
                     <tr>
-                        <th class="ps-4 py-3">Timestamp</th>
-                        <th class="py-3">Ref #</th>
-                        <th class="py-3">Action</th>
-                        <th class="py-3">Origin</th>
-                        <th class="py-3">Recipient Office</th>
-                        <th class="py-3">By</th>
-                        <th class="py-3 text-end pe-4">Options</th>
+                        <th class="ps-4 py-3" style="cursor: pointer;">
+                            <a href="{{ route('audit.index', array_merge(request()->input(), ['sort_by' => 'created_at', 'sort_order' => ($sort['by'] === 'created_at' && $sort['order'] === 'asc') ? 'desc' : 'asc'])) }}" class="text-decoration-none text-dark fw-bold d-flex align-items-center">
+                                Timestamp
+                                @if($sort['by'] === 'created_at')
+                                    <i class="bi bi-arrow-{{ $sort['order'] === 'asc' ? 'up' : 'down' }} ms-2 small"></i>
+                                @else
+                                    <i class="bi bi-arrow-down-up ms-2 small text-muted" style="opacity: 0.3;"></i>
+                                @endif
+                            </a>
+                        </th>
+                        <th class="py-3" style="cursor: pointer;">
+                            <a href="{{ route('audit.index', array_merge(request()->input(), ['sort_by' => 'transmittal_id', 'sort_order' => ($sort['by'] === 'transmittal_id' && $sort['order'] === 'asc') ? 'desc' : 'asc'])) }}" class="text-decoration-none text-dark fw-bold d-flex align-items-center">
+                                Ref #
+                                @if($sort['by'] === 'transmittal_id')
+                                    <i class="bi bi-arrow-{{ $sort['order'] === 'asc' ? 'up' : 'down' }} ms-2 small"></i>
+                                @else
+                                    <i class="bi bi-arrow-down-up ms-2 small text-muted" style="opacity: 0.3;"></i>
+                                @endif
+                            </a>
+                        </th>
+                        <th class="py-3" style="cursor: pointer;">
+                            <a href="{{ route('audit.index', array_merge(request()->input(), ['sort_by' => 'action', 'sort_order' => ($sort['by'] === 'action' && $sort['order'] === 'asc') ? 'desc' : 'asc'])) }}" class="text-decoration-none text-dark fw-bold d-flex align-items-center">
+                                Status
+                                @if($sort['by'] === 'action')
+                                    <i class="bi bi-arrow-{{ $sort['order'] === 'asc' ? 'up' : 'down' }} ms-2 small"></i>
+                                @else
+                                    <i class="bi bi-arrow-down-up ms-2 small text-muted" style="opacity: 0.3;"></i>
+                                @endif
+                            </a>
+                        </th>
+                        <th class="py-3" style="cursor: pointer;">
+                            <a href="{{ route('audit.index', array_merge(request()->input(), ['sort_by' => 'sender_office_id', 'sort_order' => ($sort['by'] === 'sender_office_id' && $sort['order'] === 'asc') ? 'desc' : 'asc'])) }}" class="text-decoration-none text-dark fw-bold d-flex align-items-center">
+                                Origin
+                                @if($sort['by'] === 'sender_office_id')
+                                    <i class="bi bi-arrow-{{ $sort['order'] === 'asc' ? 'up' : 'down' }} ms-2 small"></i>
+                                @else
+                                    <i class="bi bi-arrow-down-up ms-2 small text-muted" style="opacity: 0.3;"></i>
+                                @endif
+                            </a>
+                        </th>
+                        <th class="py-3" style="cursor: pointer;">
+                            <a href="{{ route('audit.index', array_merge(request()->input(), ['sort_by' => 'receiver_office_id', 'sort_order' => ($sort['by'] === 'receiver_office_id' && $sort['order'] === 'asc') ? 'desc' : 'asc'])) }}" class="text-decoration-none text-dark fw-bold d-flex align-items-center">
+                                Recipient Office
+                                @if($sort['by'] === 'receiver_office_id')
+                                    <i class="bi bi-arrow-{{ $sort['order'] === 'asc' ? 'up' : 'down' }} ms-2 small"></i>
+                                @else
+                                    <i class="bi bi-arrow-down-up ms-2 small text-muted" style="opacity: 0.3;"></i>
+                                @endif
+                            </a>
+                        </th>
+                        <th class="py-3" style="cursor: pointer;">
+                            <a href="{{ route('audit.index', array_merge(request()->input(), ['sort_by' => 'user_id', 'sort_order' => ($sort['by'] === 'user_id' && $sort['order'] === 'asc') ? 'desc' : 'asc'])) }}" class="text-decoration-none text-dark fw-bold d-flex align-items-center">
+                                By
+                                @if($sort['by'] === 'user_id')
+                                    <i class="bi bi-arrow-{{ $sort['order'] === 'asc' ? 'up' : 'down' }} ms-2 small"></i>
+                                @else
+                                    <i class="bi bi-arrow-down-up ms-2 small text-muted" style="opacity: 0.3;"></i>
+                                @endif
+                            </a>
+                        </th>
+                        <th class="py-3 text-end pe-4">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -114,14 +168,14 @@
                             <div class="fw-medium small">{{ $log->user->name }}</div>
                         </td>
                         <td class="text-end pe-4">
-                            <a href="{{ route('audit.show', $log) }}" class="btn btn-sm btn-navy rounded-pill px-3" title="View Audit Details">
-                                <i class="bi bi-eye"></i>
-                            </a>
+                            <div class="btn-group shadow-sm" style="border-radius: 0.5rem; overflow: hidden;">
+                                <a href="{{ route('audit.show', $log) }}" class="btn btn-sm btn-info text-white d-flex align-items-center justify-content-center px-2" title="View Audit Details" style="width: 32px; height: 32px;"><i class="bi bi-eye"></i></a>
+                            </div>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="text-center py-5">
+                        <td colspan="7" class="text-center py-5">
                             <i class="bi bi-journal-x display-4 text-muted mb-3 d-block"></i>
                             <p class="text-muted">No audit records found.</p>
                         </td>
@@ -130,7 +184,25 @@
                 </tbody>
             </table>
         </div>
-    </div>
+        @if($logs->hasPages())
+        <div class="card-footer bg-white py-3 px-4">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div class="text-muted small">
+                    Showing <strong>{{ $logs->firstItem() ?? 0 }}</strong> to <strong>{{ $logs->lastItem() ?? 0 }}</strong> 
+                    of <strong>{{ $logs->total() }}</strong> records
+                </div>
+                <div>
+                    {{ $logs->appends(request()->input())->links() }}
+                </div>
+            </div>
+        </div>
+        @else
+        <div class="card-footer bg-white py-3 px-4">
+            <div class="text-muted small">
+                Showing <strong>{{ $logs->count() }}</strong> record{{ $logs->count() !== 1 ? 's' : '' }}
+            </div>
+        </div>
+        @endif
 </div>
 
 <style>

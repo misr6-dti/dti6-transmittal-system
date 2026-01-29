@@ -50,32 +50,41 @@
     </div>
 
     <div class="col-lg-4">
-        <div class="card shadow-sm border-0 bg-navy text-white mb-4">
+        <div class="card shadow-sm border-0 mb-4">
             <div class="card-body p-4">
                 <div class="text-center py-3">
-                    <div class="bi bi-person-circle display-1 opacity-50 mb-3"></div>
-                    <h4 class="fw-bold mb-1">{{ Auth::user()->name }}</h4>
-                    <span class="badge bg-white text-navy px-3 rounded-pill uppercase fw-bold" style="font-size: 0.7rem;">
-                        {{ Auth::user()->role->name ?? 'User' }}
+                    <div class="bi bi-person-circle display-1 text-primary mb-3"></div>
+                    <h4 class="fw-bold mb-1 text-dark">{{ Auth::user()->name }}</h4>
+                    <span class="badge bg-primary text-white px-3 rounded-pill fw-bold" style="font-size: 0.7rem;">
+                        {{ Auth::user()->getRoleNames()->first() ?? 'User' }}
                     </span>
                 </div>
                 <hr class="opacity-25">
-                <div class="small">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="opacity-75">Office:</span>
-                        <span class="fw-bold">{{ Auth::user()->office->name ?? 'N/A' }}</span>
+                <div class="small text-dark">
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted">Email:</span>
+                        <span class="fw-bold text-truncate" title="{{ Auth::user()->email }}">{{ Auth::user()->email }}</span>
                     </div>
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="opacity-75">Position:</span>
-                        <span class="fw-bold text-uppercase">{{ Auth::user()->office->type ?? 'N/A' }} Office</span>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted">Office:</span>
+                        <span class="fw-bold">{{ Auth::user()->office->code ?? 'N/A' }}</span>
                     </div>
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="opacity-75">Total Logins:</span>
-                        <span class="fw-bold">{{ Auth::user()->login_count }}</span>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted">Office Type:</span>
+                        <span class="fw-bold text-uppercase">{{ Auth::user()->office->type ?? 'N/A' }}</span>
                     </div>
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="opacity-75">Member since:</span>
-                        <span class="fw-bold">{{ Auth::user()->created_at->format('M Y') }}</span>
+                    <div class="border-top border-opacity-25 my-3"></div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted">Total Logins:</span>
+                        <span class="fw-bold badge bg-primary text-white">{{ Auth::user()->login_count ?? 0 }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted">Last Login:</span>
+                        <span class="fw-bold text-dark">{{ Auth::user()->last_login_at ? Auth::user()->last_login_at->format('M d, Y') : 'Never' }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted">Member Since:</span>
+                        <span class="fw-bold text-dark">{{ Auth::user()->created_at ? Auth::user()->created_at->format('M Y') : 'N/A' }}</span>
                     </div>
                 </div>
             </div>

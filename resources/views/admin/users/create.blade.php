@@ -79,11 +79,15 @@
     </div>
     
     <div class="col-lg-4">
-        <div class="card bg-navy text-white border-0 shadow-sm mb-4">
-            <div class="card-body p-4 text-center">
-                <i class="bi bi-shield-lock-fill fs-1 mb-3 opacity-50"></i>
-                <h5 class="fw-bold">Security Notice</h5>
-                <p class="small mb-0 opacity-75">Ensure that the user's role and office assignment reflect their official designation and physical workstation.</p>
+        <div class="card shadow-sm border-0 border-start border-primary border-4 mb-4">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-start mb-3">
+                    <div class="bg-light rounded p-2 me-3">
+                        <i class="bi bi-shield-lock-fill text-primary"></i>
+                    </div>
+                    <h5 class="fw-bold mb-0 text-dark">Security Notice</h5>
+                </div>
+                <p class="small text-muted mb-0">Ensure that the user's role and office assignment reflect their official designation and physical workstation.</p>
             </div>
         </div>
     </div>
