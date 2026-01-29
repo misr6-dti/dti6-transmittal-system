@@ -361,7 +361,8 @@
                         </ul>
                     </li>
                     @endhasanyrole
-                </ul>
+                
+                @auth
                 <!-- Notification Bell -->
                 <div class="dropdown me-3 no-print">
                     <button class="btn btn-link nav-link position-relative border-0" type="button" id="notificationBell"
@@ -386,6 +387,9 @@
                         </div>
                     </ul>
                 </div>
+                @endauth
+                
+                @auth
                 <div class="dropdown">
                     <button class="btn btn-link nav-link dropdown-toggle d-flex align-items-center border-0"
                         type="button" data-bs-toggle="dropdown">
@@ -406,6 +410,7 @@
                         </li>
                     </ul>
                 </div>
+                @endauth
             </div>
         </div>
     </nav>
