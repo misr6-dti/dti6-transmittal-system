@@ -3,8 +3,8 @@
 ## System Development Documentation
 
 **Prepared for:** DTI Region 6  
-**Date:** January 29, 2026  
-**Version:** 1.1
+**Date:** February 6, 2026  
+**Version:** 1.2
 
 ---
 
@@ -89,146 +89,135 @@ The system aims to:
 ### 1. Transmittal Management
 
 - **Creation Wizard**: Single-page form with dynamic item management. Users enter:
-  - Transmittal date (defaults to today)
-  - Sender office (auto-populated from user's office)
-  - Receiver/destination office (dropdown selection, excludes sender's office)
-  - Multiple line items with quantity, unit, description, and remarks
-  
+    - Transmittal date (defaults to today)
+    - Sender office (auto-populated from user's office)
+    - Receiver/destination office (dropdown selection, excludes sender's office)
+    - Multiple line items with quantity, unit, description, and remarks
 - **Reference Number Generation**: Automatic sequential numbering format `T-OFFICE-YEAR-SEQUENCE` based on:
-  - Office code of the sender
-  - Current year
-  - Sequential counter for transmittals from that office in the year
+    - Office code of the sender
+    - Current year
+    - Sequential counter for transmittals from that office in the year
 
 - **Transmittal Status Lifecycle**:
-  - **Draft**: Initial state when created
-  - **Submitted**: After finalizing and marking as ready for dispatch
-  - **Received**: After being scanned/received by the destination office
-  
-- **Item Management**: 
-  - Dynamic table interface for adding/removing line items
-  - Each item tracks: quantity, unit, description, and remarks
-  - Supports multiple items per transmittal (cascade delete on transmittal deletion)
+    - **Draft**: Initial state when created
+    - **Submitted**: After finalizing and marking as ready for dispatch
+    - **Received**: After being scanned/received by the destination office
+- **Item Management**:
+    - Dynamic table interface for adding/removing line items
+    - Each item tracks: quantity, unit, description, and remarks
+    - Supports multiple items per transmittal (cascade delete on transmittal deletion)
 
 - **PDF Generation**: On-demand generation using `barryvdh/laravel-dompdf` with:
-  - Professional formatting
-  - Embedded QR code for unique identification
-  - Automatic paper size and layout optimization
-  - Print-friendly styling
+    - Professional formatting
+    - Embedded QR code for unique identification
+    - Automatic paper size and layout optimization
+    - Print-friendly styling
 
-- **QR Code Integration**: 
-  - Automatic QR token generation on transmittal creation (12-character uppercase string)
-  - Unique QR token per transmittal for verification
-  - QR token used in public tracking URLs for secure verification without authentication
-  - Public tracking route: `/track/{qr_token}` accessible without authentication
+- **QR Code Integration**:
+    - Automatic QR token generation on transmittal creation (12-character uppercase string)
+    - Unique QR token per transmittal for verification
+    - QR token used in public tracking URLs for secure verification without authentication
+    - Public tracking route: `/track/{qr_token}` accessible without authentication
 
-- **Receiving Module**: 
-  - Dedicated interface to accept incoming transmittals
-  - Two methods of lookup: QR code scanning or manual reference number search
-  - Automatic status update to "Received" upon acceptance
-  - Records receiver user and timestamp of receipt
-  - Creates audit log entry for the receive action
+- **Receiving Module**:
+    - Dedicated interface to accept incoming transmittals
+    - Two methods of lookup: QR code scanning or manual reference number search
+    - Automatic status update to "Received" upon acceptance
+    - Records receiver user and timestamp of receipt
+    - Creates audit log entry for the receive action
 
 - **Transmittal Filtering & Search**:
-  - Advanced filtering by status, office, date range
-  - Full-text search by reference number
-  - Default view filters to current date for quick access
-  - Date range filtering (from date and to date)
-  - Office-based access control for non-admin users
+    - Advanced filtering by status, office, date range
+    - Full-text search by reference number
+    - Default view filters to current date for quick access
+    - Date range filtering (from date and to date)
+    - Office-based access control for non-admin users
 
 ### 2. Public Tracking Feature
 
 - **QR Code Public Tracking**: Anonymous tracking via unique QR tokens
-  - Accessible at `/track/{qr_token}` without authentication
-  - Modern receipt-style UI with clean card design
-  - Displays transmittal status, dates, origin, and destination
-  - No navigation menu for public-facing pages
-  - Single-column layout for clarity
-  
+    - Accessible at `/track/{qr_token}` without authentication
+    - Modern receipt-style UI with clean card design
+    - Displays transmittal status, dates, origin, and destination
+    - No navigation menu for public-facing pages
+    - Single-column layout for clarity
 - **Tracking Information Display**:
-  - Transmittal reference number with status badge
-  - Execution date (transmittal_date)
-  - Received date and time (if received)
-  - Origin office (sender) with code and name
-  - Destination office (receiver) with code and name
-  - Security notice about link privacy
+    - Transmittal reference number with status badge
+    - Execution date (transmittal_date)
+    - Received date and time (if received)
+    - Origin office (sender) with code and name
+    - Destination office (receiver) with code and name
+    - Security notice about link privacy
 
 - **Status Badge Styling**:
-  - Received: Green gradient background
-  - Submitted: Blue gradient background
-  - Draft: Gray gradient background
+    - Received: Green gradient background
+    - Submitted: Blue gradient background
+    - Draft: Gray gradient background
 
 ### 3. Office & User Administration
 
 - **User Management** (Super Admin only):
-  - CRUD operations for system accounts
-  - User assignment to offices
-  - Role assignment and management
-  - Login tracking and history
-  
+    - CRUD operations for system accounts
+    - User assignment to offices
+    - Role assignment and management
+    - Login tracking and history
 - **Office Management** (Super Admin only):
-  - Complete office/unit management
-  - Office type classification (Regional, Provincial, Negosyo Center, Attached)
-  - Office code management (unique identifier)
-  - Hierarchical office structure support (parent_id field)
-  - Office listing with view, edit, delete capabilities
-  
+    - Complete office/unit management
+    - Office type classification (Regional, Provincial, Negosyo Center, Attached)
+    - Office code management (unique identifier)
+    - Hierarchical office structure support (parent_id field)
+    - Office listing with view, edit, delete capabilities
 - **Division Management** (Super Admin only):
-  - Create and manage organizational divisions
-  - CRUD operations for divisions
-  - Support for sub-organizational categorization
-  
+    - Create and manage organizational divisions
+    - CRUD operations for divisions
+    - Support for sub-organizational categorization
 - **Role & Permission Management** (Super Admin only):
-  - Role-Based Access Control (RBAC) powered by `spatie/laravel-permission`
-  - Create, edit, delete roles
-  - Assign permissions to roles
-  - Default roles: "Super Admin", "Regional MIS", standard users
+    - Role-Based Access Control (RBAC) powered by `spatie/laravel-permission`
+    - Create, edit, delete roles
+    - Assign permissions to roles
+    - Default roles: "Super Admin", "Regional MIS", standard users
 
 ### 4. Dashboard & Analytics
 
-- **Activity Overview**: 
-  - Summary dashboard showing pending, received, and outgoing transmittals
-  - Quick statistics on transmittal volume
-  - Real-time stats via AJAX endpoint (`/dashboard/stats`)
-  
+- **Activity Overview**:
+    - Summary dashboard showing pending, received, and outgoing transmittals
+    - Quick statistics on transmittal volume
+    - Real-time stats via AJAX endpoint (`/dashboard/stats`)
 - **Performance Metrics**:
-  - Volume of transactions processed per office
-  - Date-based filtering for trend analysis
-  - User-specific and office-specific views
+    - Volume of transactions processed per office
+    - Date-based filtering for trend analysis
+    - User-specific and office-specific views
 
 ### 5. Notifications & Logs
 
 - **Audit Logs** (`transmittal_logs`):
-  - Immutable record of who did what and when
-  - Logged actions: Created, Submitted, Received, Edited
-  - User tracking for accountability
-  - Detailed description of actions
-  - Audit history viewable by authorized users with filtering capabilities
-  
+    - Immutable record of who did what and when
+    - Logged actions: Created, Submitted, Received, Edited
+    - User tracking for accountability
+    - Detailed description of actions
+    - Audit history viewable by authorized users with filtering capabilities
 - **In-App Notifications** (`notifications` table):
-  - System-generated alerts for transmittal events
-  - User notification inbox
-  - Mark notifications as read functionality
-  - Unread count display in UI
-  - Supports email and in-app delivery (extensible)
+    - System-generated alerts for transmittal events
+    - User notification inbox
+    - Mark notifications as read functionality
+    - Unread count display in UI
+    - Supports email and in-app delivery (extensible)
 
 ### 6. User Utilities
 
 - **Profile Management**:
-  - Users can edit their own profile information
-  - Password change capability
-  - Account deletion option
-  
-- **FAQs Page**: 
-  - Static page with frequently asked questions
-  - Accessible to all authenticated users
-  
-- **User Manual**: 
-  - System usage documentation
-  - Available to all authenticated users
-  
-- **Support Page**: 
-  - Support information and contact details
-  - Accessible to all authenticated users
+    - Users can edit their own profile information
+    - Password change capability
+    - Account deletion option
+- **FAQs Page**:
+    - Static page with frequently asked questions
+    - Accessible to all authenticated users
+- **User Manual**:
+    - System usage documentation
+    - Available to all authenticated users
+- **Support Page**:
+    - Support information and contact details
+    - Accessible to all authenticated users
 
 ---
 
@@ -236,18 +225,18 @@ The system aims to:
 
 ### Backend
 
-- **Framework**: Laravel 8.x
-- **Language**: PHP 7.4
-- **Database**: MySQL / SQLite
-- **Server**: Apache (XAMPP)
+- **Framework**: Laravel 8.75+
+- **Language**: PHP 7.4+ (Supports 8.0)
+- **Database**: MySQL 5.7+ / SQLite (Dev)
+- **Server**: Apache (XAMPP Environment)
 
 ### Frontend
 
 - **Framework**: Blade Templates
-- **Styling**: Bootstrap 5 & Tailwind CSS
-- **Icons**: Bootstrap Icons (Localized)
-- **Scripting**: Alpine.js (Localized)
-- **Asset Manager**: Laravel Mix (NPM Managed)
+- **Styling**: Bootstrap 5.3.0 & Tailwind CSS 3.1.0
+- **Icons**: Bootstrap Icons 1.10.5
+- **Scripting**: Alpine.js 3.4.2
+- **Asset Manager**: Laravel Mix 6.0.6
 
 ### Key Libraries
 
@@ -262,23 +251,27 @@ The system aims to:
 ### Main Tables
 
 #### **users**
+
 - System accounts with authentication
 - Fields: id, name, email, password, office_id, login_count, last_login_at, timestamps
 - Relations: belongsTo Office, hasMany Transmittals (as sender), hasMany Transmittals (as receiver)
 - Uses Spatie Permission traits for role management
 
 #### **offices**
+
 - Definition of organizational units (e.g., "Ord - Admin", "Iloilo Provincial Office")
 - Fields: id, name, type (Regional/Provincial/Negosyo Center/Attached), code (unique), parent_id (for hierarchy), timestamps
 - Types: Regional, Provincial, Negosyo Centers, Attached units
 - Supports hierarchical structure via parent_id field
 
 #### **divisions**
+
 - Optional organizational sub-units
 - Fields: id, name, code, timestamps
 - Enables further categorization beyond offices
 
 #### **transmittals**
+
 - Header record for a document bundle
 - Fields: id, reference_number (unique), transmittal_date, sender_user_id, sender_office_id, receiver_office_id, receiver_user_id, remarks, status (Draft/Submitted/Received), received_at, verification_token, qr_token, timestamps
 - Status values: Draft, Submitted, Received
@@ -287,18 +280,21 @@ The system aims to:
 - Relations: belongsTo User (sender/receiver), belongsTo Office (sender/receiver), hasMany TransmittalItems, hasMany TransmittalLogs
 
 #### **transmittal_items**
+
 - Individual line items contained within a transmittal
 - Fields: id, transmittal_id, quantity, unit, description, remarks, timestamps
 - Cascading delete when transmittal is deleted
 - Relations: belongsTo Transmittal
 
 #### **transmittal_logs**
+
 - Historical audit trail of transmittal events
 - Fields: id, transmittal_id, user_id, action (Created/Submitted/Received/Edited), description, timestamps
 - Immutable record for accountability and compliance
 - Relations: belongsTo Transmittal, belongsTo User
 
 #### **notifications**
+
 - User alert system
 - Fields: id, user_id, title, description, type, is_read, data (JSON), timestamps
 - Supports multiple notification types
@@ -306,23 +302,28 @@ The system aims to:
 - Relations: belongsTo User
 
 #### **permissions** (Spatie)
+
 - Permission definitions for role-based access
 - Fields: id, name, guard_name, timestamps
 
 #### **roles** (Spatie)
+
 - Role definitions
 - Fields: id, name, guard_name, timestamps
 - Default roles: Super Admin, Regional MIS, Standard User
 
 #### **role_has_permissions** (Spatie)
+
 - Junction table for role-permission relationships
 - Fields: permission_id, role_id
 
 #### **model_has_roles** (Spatie)
+
 - Junction table for user-role assignments
 - Fields: role_id, model_id, model_type
 
 #### **cache** & **jobs**
+
 - Framework-level tables for Laravel caching and queue management
 
 ---
@@ -337,10 +338,12 @@ The system aims to:
 ### Authenticated Routes (Require Login)
 
 #### Dashboard
+
 - `GET /dashboard` - Main dashboard view
 - `GET /dashboard/stats` - Real-time statistics (AJAX)
 
 #### Transmittal Management
+
 - `GET /transmittals` - List all accessible transmittals (with filtering)
 - `GET /transmittals/create` - Create transmittal form
 - `POST /transmittals` - Store new transmittal
@@ -353,28 +356,34 @@ The system aims to:
 - `GET /transmittals/{id}/pdf` - Download transmittal as PDF
 
 #### Audit & History
+
 - `GET /audit-history` - View audit logs
 - `GET /audit-history/{id}` - View specific audit log entry
 
 #### Notifications
+
 - `GET /notifications` - View notification inbox
 - `GET /notifications/unread-count` - Get unread count (AJAX)
 - `POST /notifications/{id}/read` - Mark notification as read
 
 #### User Profile
+
 - `GET /profile` - Edit profile form
 - `PATCH /profile` - Update profile
 - `DELETE /profile` - Delete account
 
 #### Information Pages
+
 - `GET /faqs` - Frequently asked questions
 - `GET /user-manual` - System user manual
 - `GET /support` - Support information
 
 ### Admin Routes (Super Admin/Regional MIS Only)
+
 Prefix: `/admin/` with middleware: `admin`
 
 #### User Management
+
 - `GET /admin/users` - List users
 - `GET /admin/users/create` - Create user form
 - `POST /admin/users` - Store new user
@@ -384,6 +393,7 @@ Prefix: `/admin/` with middleware: `admin`
 - `DELETE /admin/users/{id}` - Delete user
 
 #### Role Management
+
 - `GET /admin/roles` - List roles
 - `GET /admin/roles/create` - Create role form
 - `POST /admin/roles` - Store new role
@@ -393,6 +403,7 @@ Prefix: `/admin/` with middleware: `admin`
 - `DELETE /admin/roles/{id}` - Delete role
 
 #### Office Management
+
 - `GET /admin/offices` - List offices
 - `GET /admin/offices/create` - Create office form
 - `POST /admin/offices` - Store new office
@@ -402,6 +413,7 @@ Prefix: `/admin/` with middleware: `admin`
 - `DELETE /admin/offices/{id}` - Delete office
 
 #### Division Management
+
 - `GET /admin/divisions` - List divisions
 - `GET /admin/divisions/create` - Create division form
 - `POST /admin/divisions` - Store new division
@@ -418,42 +430,45 @@ Prefix: `/admin/` with middleware: `admin`
 
 1. **Authenticate**: User logs in with credentials
 2. **Navigate**: Access "Create Transmittal" from main menu
-3. **Setup**: 
-   - System auto-fills sender office from user's office
-   - System auto-generates reference number based on office code and year
+3. **Setup**:
+    - System auto-fills sender office from user's office
+    - System auto-generates reference number based on office code and year
 4. **Define Details**:
-   - Select destination office (receiver_office_id)
-   - Set transmittal date (defaults to today)
-   - Enter remarks (optional)
+    - Select destination office (receiver_office_id)
+    - Set transmittal date (defaults to today)
+    - Enter remarks (optional)
 5. **Add Items**: Dynamically add line items to the transmittal:
-   - Item quantity and unit
-   - Item description
-   - Item remarks (optional)
+    - Item quantity and unit
+    - Item description
+    - Item remarks (optional)
 6. **Save**: Save the transmittal in "Draft" status
-   - System creates audit log entry "Created"
-   - QR token generated automatically
+    - System creates audit log entry "Created"
+    - QR token generated automatically
 7. **Finalize**: Mark transmittal as "Submitted" (ready for dispatch)
-   - Status changes from Draft to Submitted
-   - Audit log entry "Submitted" recorded
+    - Status changes from Draft to Submitted
+    - Audit log entry "Submitted" recorded
 8. **Print**: Generate and print PDF with embedded QR code
-   - PDF contains all transmittal details and QR code
-   - Ready for physical dispatch
+    - PDF contains all transmittal details and QR code
+    - Ready for physical dispatch
 
 ### 2. Receiving Process (Receiver)
 
 **Option A: QR Code Scan**
+
 1. Receiver gets physical bundle with printed transmittal sheet
 2. Scans QR code using device camera or QR scanner app
 3. System redirects to `/track/{qr_token}` (public tracking page)
 4. Can verify details and access full system if authenticated
 
 **Option B: Manual Reference Number Lookup**
+
 1. Receiver navigates to "Receive Transmittal" section
 2. Enters or searches for reference number
 3. Locates the transmittal in the system
 4. Clicks "Receive" button
 
 **Receiving Completion**:
+
 1. System updates transmittal status to "Received"
 2. Records receiver user ID and timestamp (received_at)
 3. Creates audit log entry "Received"
@@ -465,60 +480,60 @@ Prefix: `/admin/` with middleware: `admin`
 1. **QR Code Generation**: When transmittal is printed, QR code contains unique token
 2. **Public Access**: Anyone with the QR code can scan to access `/track/{qr_token}`
 3. **View Information** (no login required):
-   - Transmittal reference number
-   - Transmittal status (Draft/Submitted/Received)
-   - Execution date
-   - Received date and time (if applicable)
-   - Origin office (sender details)
-   - Destination office (receiver details)
+    - Transmittal reference number
+    - Transmittal status (Draft/Submitted/Received)
+    - Execution date
+    - Received date and time (if applicable)
+    - Origin office (sender details)
+    - Destination office (receiver details)
 4. **Security**: URL token is unique and difficult to guess; only displays basic tracking info
 
 ### 4. Audit & Tracking (Authenticated Users)
 
 1. **Access Audit History**: Authorized users navigate to "Audit History"
 2. **View Transmittal Timeline**: Complete lifecycle is displayed:
-   - Created by User X at timestamp
-   - Submitted at timestamp
-   - Received by User Y at timestamp
+    - Created by User X at timestamp
+    - Submitted at timestamp
+    - Received by User Y at timestamp
 3. **Filter & Search**:
-   - Filter by date range
-   - Search by reference number
-   - Filter by action type
-   - View detailed descriptions of each action
+    - Filter by date range
+    - Search by reference number
+    - Filter by action type
+    - View detailed descriptions of each action
 4. **Export/Report**: Can use audit history for compliance and reporting
 
 ### 5. User & Role Management (Super Admin Only)
 
 1. **Access Admin Panel**: Navigate to admin section
 2. **User Management**:
-   - Create new user with office assignment
-   - Edit user details and office associations
-   - Assign roles to users
-   - Delete users and their associations
-   - Track user login history
+    - Create new user with office assignment
+    - Edit user details and office associations
+    - Assign roles to users
+    - Delete users and their associations
+    - Track user login history
 3. **Role Management**:
-   - Create custom roles
-   - Assign permissions to roles
-   - Edit and delete roles
-   - Manage default roles (Super Admin, Regional MIS)
+    - Create custom roles
+    - Assign permissions to roles
+    - Edit and delete roles
+    - Manage default roles (Super Admin, Regional MIS)
 4. **Office Management**:
-   - Create new offices with type classification
-   - Set office codes and names
-   - Define office hierarchy (parent_id)
-   - Manage all organizational units
+    - Create new offices with type classification
+    - Set office codes and names
+    - Define office hierarchy (parent_id)
+    - Manage all organizational units
 5. **Division Management**:
-   - Create sub-organizational units
-   - Manage division codes and names
-   - Organize staff by divisions
+    - Create sub-organizational units
+    - Manage division codes and names
+    - Organize staff by divisions
 
 ### 6. Dashboard & Analytics
 
 1. **Access Dashboard**: Authenticated user logs in
 2. **View Overview**:
-   - Quick stats on pending transmittals
-   - Received transmittals count
-   - Outgoing transmittals
-   - Recent activity timeline
+    - Quick stats on pending transmittals
+    - Received transmittals count
+    - Outgoing transmittals
+    - Recent activity timeline
 3. **Filter Data**: Use date range and office filters
 4. **Real-time Updates**: Dashboard stats auto-refresh via AJAX
 
@@ -527,18 +542,20 @@ Prefix: `/admin/` with middleware: `admin`
 ## Recent Enhancements (Version 1.1)
 
 ### Public Transmittal Tracking Feature
+
 - **Implemented**: Modern receipt-style tracking page accessible via QR token
 - **URL**: `/track/{qr_token}` (no authentication required)
 - **Features**:
-  - Clean, minimalist card-based UI design
-  - Displays transmittal reference, status, dates, and location information
-  - No navigation menu for public-facing pages
-  - Single-column layout for clarity
-  - Responsive design for mobile devices
-  - Modern gradient styling for status badges
-  - Professional layout optimized for printing
+    - Clean, minimalist card-based UI design
+    - Displays transmittal reference, status, dates, and location information
+    - No navigation menu for public-facing pages
+    - Single-column layout for clarity
+    - Responsive design for mobile devices
+    - Modern gradient styling for status badges
+    - Professional layout optimized for printing
 
 ### QR Token Implementation
+
 - Automatic unique QR token generation (12-character uppercase alphanumeric)
 - QR token stored in `transmittals.qr_token` column
 - Secure verification without requiring authentication
@@ -581,6 +598,32 @@ Prefix: `/admin/` with middleware: `admin`
 - **Office Hierarchy**: Intuitive organizational structure representation
 - **Search & Filter**: Advanced filtering capabilities for transmittals
 - **Responsive Design**: Works seamlessly on desktop, tablet, and mobile devices
+
+---
+
+---
+
+## System Health & Analysis (February 2026)
+
+### Security Assessment
+
+A generic security audit was performed on **February 6, 2026**.
+
+- **Vulnerabilities Detected**:
+    - `axios` (High Severity): CSRF and SSRF vulnerabilities.
+    - `lodash` (Moderate Severity): Prototype pollution.
+    - `webpack-dev-server` (Moderate Severity): Source code exposure risks.
+- **Action Required**: Run `npm audit fix` immediately. Consider upgrading `axios` carefully as major version upgrades may break existing API calls.
+
+### Architectural Review
+
+- **Strengths**:
+    - **Modular Design**: Clear separation of `Transmittal`, `Office`, and `User` domains.
+    - **Audit Logging**: Robust implementation of `TransmittalLog` ensures full accountability.
+    - **Service Layer**: Strong use of Policies and dedicated Controllers.
+- **Areas for Improvement**:
+    - **Validation**: Validation logic is currently inside Controllers (`TransmittalController@store`). Recommendation: Move to dedicated **FormRequest** classes for better separation of concerns.
+    - **Testing**: PHPUnit tests exist but coverage should be expanded significantly for critical paths like "Receiving Transmittals".
 
 ---
 
@@ -693,7 +736,7 @@ flowchart LR
     C -->|Print & Dispatch| D[In Transit]
     D -->|Scan QR / Receive| E[Received<br/>Status]
     E -->|Archive/Complete| F[Archived]
-    
+
     style A fill:#e2e8f0
     style B fill:#e2e8f0
     style C fill:#dcfce7
@@ -740,7 +783,7 @@ graph TB
     PDF[PDF Generator<br/>DOMPDF]
     QR[QR Code<br/>Generator]
     Mail[Email<br/>Notifications]
-    
+
     Client -->|HTTP Request| Web
     Web --> Auth
     Auth -->|Authorized| Routes
@@ -750,7 +793,7 @@ graph TB
     Controller -->|Generate| PDF
     Controller -->|Generate| QR
     Controller -->|Send| Mail
-    
+
     PDF -->|Return PDF| Client
     QR -->|Return QR Code| PDF
 ```
@@ -758,10 +801,12 @@ graph TB
 ### Annex 5: Technology Stack Details
 
 **Backend Framework**
+
 - Laravel 8.x with Blade templating engine
 - PHP 7.4+ for server-side logic
 
 **Frontend Stack**
+
 - Bootstrap 5 for responsive UI components
 - Tailwind CSS for utility-first styling
 - Alpine.js for lightweight interactivity
@@ -769,17 +814,20 @@ graph TB
 - Laravel Mix for asset compilation
 
 **Database**
+
 - MySQL 5.7+ or SQLite for development
 - InnoDB storage engine for transactions
 - Proper indexing on frequently queried columns
 
 **Key Dependencies**
+
 - `spatie/laravel-permission` - Role & permission management
 - `barryvdh/laravel-dompdf` - PDF generation
 - `chillerlan/php-qrcode` - QR code generation
 - Laravel's built-in authentication system
 
 **Server Environment**
+
 - Apache 2.4+ via XAMPP
 - PHP 7.4 or higher
 - Composer for dependency management
@@ -886,4 +934,12 @@ dti6-tms/
 
 ---
 
-_End of Document. Last Updated: January 29, 2026_
+## Changelog
+
+| Version | Date         | Author   | Description                                                                            |
+| :------ | :----------- | :------- | :------------------------------------------------------------------------------------- |
+| 1.0     | Jan 04, 2026 | DTI6 MIS | Initial System Documentation                                                           |
+| 1.1     | Jan 29, 2026 | DTI6 MIS | Added Public Tracking & QR Token details                                               |
+| 1.2     | Feb 06, 2026 | AI Agent | Updated Tech Stack versions, added Security Analysis, and Refined Architecture Details |
+
+_End of Document. Last Updated: February 6, 2026_
