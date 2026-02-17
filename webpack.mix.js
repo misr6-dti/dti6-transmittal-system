@@ -13,7 +13,6 @@ const mix = require("laravel-mix");
 
 mix.js("resources/js/app.js", "public/js")
     .postCss("resources/css/app.css", "public/css", [
-        require("postcss-import"),
         require("tailwindcss"),
         require("autoprefixer"),
     ])
@@ -21,14 +20,7 @@ mix.js("resources/js/app.js", "public/js")
         processCssUrls: false,
     });
 
-mix.styles([
-    "node_modules/bootstrap/dist/css/bootstrap.min.css",
-    "node_modules/bootstrap-icons/font/bootstrap-icons.css",
-    "node_modules/datatables.net-bs5/css/dataTables.bootstrap5.min.css",
-    "node_modules/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css"
-], "public/css/vendor.css");
-
-mix.copyDirectory("node_modules/bootstrap-icons/font/fonts", "public/css/fonts");
+// Vendor styles removed (Tailwind migration)
 
 if (mix.inProduction()) {
     mix.version();

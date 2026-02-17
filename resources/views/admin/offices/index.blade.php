@@ -1,149 +1,175 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="mb-5">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb mb-2">
-            <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-navy">Dashboard</a></li>
-            <li class="breadcrumb-item active">Office Management</li>
-        </ol>
-    </nav>
-    <div class="d-flex justify-content-between align-items-start no-print">
+<div class="mb-8">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 no-print">
         <div>
-            <h2 class="fw-extrabold mb-1">Office Management</h2>
-            <p class="text-muted mb-0 small">Manage DTI regional offices and their information.</p>
+            <nav class="flex mb-2" aria-label="Breadcrumb">
+                <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                    <li class="inline-flex items-center">
+                        <a href="{{ route('dashboard') }}" class="text-navy hover:text-navy-light font-medium text-sm flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <div class="flex items-center">
+                            <svg class="w-6 h-6 text-slate-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+                            <span class="ml-1 text-sm font-medium text-slate-500 md:ml-2">Office Management</span>
+                        </div>
+                    </li>
+                </ol>
+            </nav>
+            <h2 class="text-2xl font-extrabold text-navy">Office Management</h2>
+            <p class="text-slate-500 text-sm">Manage DTI regional offices and their information.</p>
         </div>
-        <a href="{{ route('admin.offices.create') }}" class="btn btn-navy d-flex align-items-center">
-            <i class="bi bi-building-plus me-2"></i>New Office
+        <a href="{{ route('admin.offices.create') }}" class="bg-navy text-white hover:bg-navy-light transition-colors px-5 py-2.5 rounded-xl font-bold flex items-center shadow-lg shadow-navy/20">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m3-4h1m-1 4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+            New Office
         </a>
     </div>
 </div>
 
-<div class="card shadow-sm mb-4 no-print">
-    <div class="card-body">
-        <form action="{{ route('admin.offices.index') }}" method="GET" class="row g-2">
-            <div class="col-lg-4 col-md-6">
-                <div class="input-group">
-                    <span class="input-group-text bg-transparent border-end-0"><i class="bi bi-search"></i></span>
-                    <input type="text" name="search" class="form-control border-start-0" placeholder="Search by name or code..." value="{{ request('search') }}">
+<div class="bg-white rounded-2xl shadow-sm border border-slate-100 mb-6 p-6 no-print">
+    <form action="{{ route('admin.offices.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-12 gap-4">
+        <div class="md:col-span-10">
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 </div>
+                <input type="text" name="search" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-navy/20 focus:border-navy text-sm transition-all" placeholder="Search by name or code..." value="{{ request('search') }}">
             </div>
-            <div class="col-lg-2 col-md-6 d-grid">
-                <a href="{{ route('admin.offices.index') }}" class="btn btn-light text-muted d-flex align-items-center justify-content-center" title="Reset Filters">Clear</a>
-            </div>
-        </form>
-    </div>
+        </div>
+        <div class="md:col-span-2">
+            <a href="{{ route('admin.offices.index') }}" class="w-full h-full flex items-center justify-center px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl font-medium text-sm transition-colors">
+                Clear
+            </a>
+        </div>
+    </form>
 </div>
-    <div class="col-lg-12">
-        <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table align-middle mb-0">
-                        <thead class="bg-light">
-                            <tr>
-                                <th class="ps-4 py-3" style="cursor: pointer;">
-                                    <a href="{{ route('admin.offices.index', array_merge(request()->input(), ['sort_by' => 'name', 'sort_order' => ($sort['by'] === 'name' && $sort['order'] === 'asc') ? 'desc' : 'asc'])) }}" class="text-decoration-none text-dark fw-bold d-flex align-items-center">
-                                        Office Name
-                                        @if($sort['by'] === 'name')
-                                            <i class="bi bi-arrow-{{ $sort['order'] === 'asc' ? 'up' : 'down' }} ms-2 small"></i>
-                                        @else
-                                            <i class="bi bi-arrow-down-up ms-2 small text-muted" style="opacity: 0.3;"></i>
-                                        @endif
-                                    </a>
-                                </th>
-                                <th class="py-3" style="cursor: pointer;">
-                                    <a href="{{ route('admin.offices.index', array_merge(request()->input(), ['sort_by' => 'code', 'sort_order' => ($sort['by'] === 'code' && $sort['order'] === 'asc') ? 'desc' : 'asc'])) }}" class="text-decoration-none text-dark fw-bold d-flex align-items-center">
-                                        Code
-                                        @if($sort['by'] === 'code')
-                                            <i class="bi bi-arrow-{{ $sort['order'] === 'asc' ? 'up' : 'down' }} ms-2 small"></i>
-                                        @else
-                                            <i class="bi bi-arrow-down-up ms-2 small text-muted" style="opacity: 0.3;"></i>
-                                        @endif
-                                    </a>
-                                </th>
-                                <th class="py-3" style="cursor: pointer;">
-                                    <a href="{{ route('admin.offices.index', array_merge(request()->input(), ['sort_by' => 'type', 'sort_order' => ($sort['by'] === 'type' && $sort['order'] === 'asc') ? 'desc' : 'asc'])) }}" class="text-decoration-none text-dark fw-bold d-flex align-items-center">
-                                        Type
-                                        @if($sort['by'] === 'type')
-                                            <i class="bi bi-arrow-{{ $sort['order'] === 'asc' ? 'up' : 'down' }} ms-2 small"></i>
-                                        @else
-                                            <i class="bi bi-arrow-down-up ms-2 small text-muted" style="opacity: 0.3;"></i>
-                                        @endif
-                                    </a>
-                                </th>
-                                <th class="py-3">Parent Office</th>
-                                <th class="pe-4 text-end py-3">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($offices as $office)
-                                <tr>
-                                    <td class="ps-4">{{ $office->name }}</td>
-                                    <td>{{ $office->code }}</td>
-                                    <td>
-                                        <span class="badge bg-primary">{{ $office->type }}</span>
-                                    </td>
-                                    <td>
-                                        @if($office->parent)
-                                            <small class="text-muted">{{ $office->parent->name }}</small>
-                                        @else
-                                            <small class="text-muted text-secondary">—</small>
-                                        @endif
-                                    </td>
-                                    <td class="text-end pe-4">
-                                        <div class="btn-group shadow-sm" style="border-radius: 0.5rem; overflow: hidden;">
-                                            <a href="{{ route('admin.offices.edit', $office) }}" class="btn btn-sm btn-warning text-white d-flex align-items-center justify-content-center px-2" title="Edit" style="width: 32px; height: 32px;">
-                                                <i class="bi bi-pencil"></i>
-                                            </a>
-                                            <button type="button" 
-                                                class="btn btn-sm btn-danger text-white d-flex align-items-center justify-content-center px-2" 
-                                                title="Delete Office"
-                                                data-bs-toggle="modal" 
-                                                data-bs-target="#confirmationModal"
-                                                data-action="{{ route('admin.offices.destroy', $office) }}"
-                                                data-method="DELETE"
-                                                data-title="Delete Office"
-                                                data-message="Are you sure you want to delete '{{ $office->name }}'?"
-                                                data-btn-class="btn-danger"
-                                                data-btn-text="Delete"
-                                                style="width: 32px; height: 32px;">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="text-center py-5">
-                                        <div class="text-muted mb-3"><i class="bi bi-folder2-open fs-1"></i></div>
-                                        <h5 class="text-muted">No offices found.</h5>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+
+<div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm text-slate-600">
+            <thead class="bg-slate-50 text-xs font-bold uppercase text-slate-500 tracking-wider">
+                <tr>
+                    <th class="px-6 py-4 cursor-pointer hover:bg-slate-100 transition-colors">
+                        <a href="{{ route('admin.offices.index', array_merge(request()->input(), ['sort_by' => 'name', 'sort_order' => ($sort['by'] === 'name' && $sort['order'] === 'asc') ? 'desc' : 'asc'])) }}" class="flex items-center group">
+                            Office Name
+                            @if($sort['by'] === 'name')
+                                <span class="ml-2 text-navy">
+                                    @if($sort['order'] === 'asc')
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+                                    @else
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                    @endif
+                                </span>
+                            @else
+                                <svg class="w-3 h-3 ml-2 text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path></svg>
+                            @endif
+                        </a>
+                    </th>
+                    <th class="px-6 py-4 cursor-pointer hover:bg-slate-100 transition-colors">
+                        <a href="{{ route('admin.offices.index', array_merge(request()->input(), ['sort_by' => 'code', 'sort_order' => ($sort['by'] === 'code' && $sort['order'] === 'asc') ? 'desc' : 'asc'])) }}" class="flex items-center group">
+                            Code
+                            @if($sort['by'] === 'code')
+                                <span class="ml-2 text-navy">
+                                    @if($sort['order'] === 'asc')
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+                                    @else
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                    @endif
+                                </span>
+                            @else
+                                <svg class="w-3 h-3 ml-2 text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path></svg>
+                            @endif
+                        </a>
+                    </th>
+                    <th class="px-6 py-4 cursor-pointer hover:bg-slate-100 transition-colors">
+                        <a href="{{ route('admin.offices.index', array_merge(request()->input(), ['sort_by' => 'type', 'sort_order' => ($sort['by'] === 'type' && $sort['order'] === 'asc') ? 'desc' : 'asc'])) }}" class="flex items-center group">
+                            Type
+                            @if($sort['by'] === 'type')
+                                <span class="ml-2 text-navy">
+                                    @if($sort['order'] === 'asc')
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+                                    @else
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                    @endif
+                                </span>
+                            @else
+                                <svg class="w-3 h-3 ml-2 text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path></svg>
+                            @endif
+                        </a>
+                    </th>
+                    <th class="px-6 py-4">Parent Office</th>
+                    <th class="px-6 py-4 text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+                @forelse($offices as $office)
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-4 font-bold text-slate-700">{{ $office->name }}</td>
+                    <td class="px-6 py-4">{{ $office->code }}</td>
+                    <td class="px-6 py-4">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
+                            {{ $office->type }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-slate-500">
+                        {{ $office->parent->name ?? '—' }}
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <div class="inline-flex rounded-lg shadow-sm">
+                            <a href="{{ route('admin.offices.edit', $office) }}" class="px-3 py-2 bg-white border border-slate-200 rounded-l-lg hover:bg-slate-50 text-amber-500 transition-colors" title="Edit">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            </a>
+                            <button type="button" 
+                                class="px-3 py-2 bg-white border-t border-b border-r border-slate-200 rounded-r-lg hover:bg-red-50 text-red-500 transition-colors"
+                                title="Delete Office"
+                                data-bs-toggle="modal" 
+                                data-bs-target="#confirmationModal"
+                                data-action="{{ route('admin.offices.destroy', $office) }}"
+                                data-method="DELETE"
+                                data-title="Delete Office"
+                                data-message="Are you sure you want to delete '{{ $office->name }}'?"
+                                data-btn-class="btn-danger"
+                                data-btn-text="Delete">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="5" class="px-6 py-12 text-center">
+                        <div class="text-slate-300 mb-3 block mx-auto w-16 h-16">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m3-4h1m-1 4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                        </div>
+                        <h5 class="text-slate-500 font-medium">No offices found.</h5>
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+    @if($offices->hasPages())
+    <div class="px-6 py-4 border-t border-slate-100 bg-slate-50/50">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="text-slate-500 text-sm">
+                Showing <strong>{{ $offices->firstItem() ?? 0 }}</strong> to <strong>{{ $offices->lastItem() ?? 0 }}</strong> 
+                of <strong>{{ $offices->total() }}</strong> office{{ $offices->total() !== 1 ? 's' : '' }}
             </div>
-            @if($offices->hasPages())
-            <div class="card-footer bg-white py-3 px-4">
-                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                    <div class="text-muted small">
-                        Showing <strong>{{ $offices->firstItem() ?? 0 }}</strong> to <strong>{{ $offices->lastItem() ?? 0 }}</strong> 
-                        of <strong>{{ $offices->total() }}</strong> office{{ $offices->total() !== 1 ? 's' : '' }}
-                    </div>
-                    <div>
-                        {{ $offices->appends(request()->input())->links() }}
-                    </div>
-                </div>
+            <div class="w-full md:w-auto">
+                {{ $offices->appends(request()->input())->links() }}
             </div>
-            @else
-            <div class="card-footer bg-white py-3 px-4">
-                <div class="text-muted small">
-                    Showing <strong>{{ $offices->count() }}</strong> office{{ $offices->count() !== 1 ? 's' : '' }}
-                </div>
-            </div>
-            @endif
         </div>
     </div>
+    @else
+    <div class="px-6 py-4 border-t border-slate-100 bg-slate-50/50">
+        <div class="text-slate-500 text-sm">
+            Showing <strong>{{ $offices->count() }}</strong> office{{ $offices->count() !== 1 ? 's' : '' }}
+        </div>
+    </div>
+    @endif
 </div>
 @endsection

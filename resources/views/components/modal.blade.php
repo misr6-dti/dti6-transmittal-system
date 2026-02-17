@@ -41,8 +41,8 @@ $maxWidthClass = [
     tabindex="-1"
     role="dialog"
 >
-    <div class="modal-dialog modal-dialog-centered {{ $maxWidthClass }}" role="document" x-show="show" x-transition>
-        <div class="modal-content border-0 shadow-lg" style="border-radius: 1.25rem;">
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 {{ $maxWidthClass }}" role="document" x-show="show" x-transition>
+        <div class="bg-white shadow-xl overflow-hidden w-full" style="border-radius: 1.25rem;">
             {{ $slot }}
         </div>
     </div>

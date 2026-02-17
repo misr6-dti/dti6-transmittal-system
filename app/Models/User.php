@@ -47,6 +47,14 @@ class User extends Authenticatable
 
 
     /**
+     * Check if user is an Admin (Regional MIS or Super Admin)
+     */
+    public function isAdmin(): bool
+    {
+        return $this->hasAnyRole(['Super Admin', 'Regional MIS']);
+    }
+
+    /**
      * The attributes that should be hidden for serialization.
      *
      * @var list<string>

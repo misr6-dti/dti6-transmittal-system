@@ -8,7 +8,8 @@ Route::get('/', function () {
 });
 
 // Public Tracking Route (no authentication required)
-Route::get('/track/{qr_token}', [App\Http\Controllers\TransmittalController::class, 'publicTrack'])->name('transmittals.public-track');
+// Rate-limited to 60 requests/min per IP to prevent brute-force QR token enumeration (VAPT V-06)
+Route::get('/track/{qr_token}', [App\Http\Controllers\TransmittalController::class, 'publicTrack'])->middleware('throttle:60,1')->name('transmittals.public-track');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');

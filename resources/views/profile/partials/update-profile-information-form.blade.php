@@ -1,55 +1,33 @@
 <section>
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6">
+    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
         @csrf
         @method('patch')
 
-        <div class="mb-4">
-            <label for="name" class="form-label fw-bold small text-uppercase text-muted">{{ __('Full Name') }}</label>
-            <input id="name" name="name" type="text" class="form-control" value="{{ old('name', $user->name) }}" required autofocus autocomplete="name" />
-            @if($errors->has('name'))
-                <div class="text-danger small mt-1">{{ $errors->first('name') }}</div>
-            @endif
+        <div class="space-y-2">
+            <label for="name" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">{{ __('Full Name') }}</label>
+            <input id="name" name="name" type="text" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-navy/20 focus:border-navy text-sm transition-all @error('name') border-red-500 focus:border-red-500 focus:ring-red-200 @enderror" value="{{ old('name', $user->name) }}" required autofocus autocomplete="name" />
         </div>
 
-        <div class="mb-4">
-            <label for="email" class="form-label fw-bold small text-uppercase text-muted">{{ __('Work Email') }}</label>
-            <input id="email" name="email" type="email" class="form-control" value="{{ old('email', $user->email) }}" required autocomplete="username" />
-            @if($errors->has('email'))
-                <div class="text-danger small mt-1">{{ $errors->first('email') }}</div>
-            @endif
+        <div class="space-y-2">
+            <label for="email" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">{{ __('Work Email') }}</label>
+            <input id="email" name="email" type="email" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-navy/20 focus:border-navy text-sm transition-all @error('email') border-red-500 focus:border-red-500 focus:ring-red-200 @enderror" value="{{ old('email', $user->email) }}" required autocomplete="username" />
 
             @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
                 <div class="mt-2">
-                    <p class="text-sm text-danger">
+                    <p class="text-sm text-red-600">
                         {{ __('Your email address is unverified.') }}
-                        <button form="send-verification" class="btn btn-link p-0 text-sm align-baseline">
+                        <button form="send-verification" class="underline text-sm text-slate-600 hover:text-navy rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navy">
                             {{ __('Click here to re-send the verification email.') }}
                         </button>
                     </p>
-
-                    @if (session('status') === 'verification-link-sent')
-                        <p class="mt-2 text-success small">
-                            {{ __('A new verification link has been sent to your email address.') }}
-                        </p>
-                    @endif
                 </div>
             @endif
         </div>
 
-        <div class="d-flex align-items-center gap-3">
-            <button type="submit" class="btn btn-navy px-4">{{ __('Update Profile') }}</button>
-
-            @if (session('status') === 'profile-updated')
-                <div
-                    x-data="{ show: true }"
-                    x-show="show"
-                    x-transition
-                    x-init="setTimeout(() => show = false, 2000)"
-                    class="text-success small"
-                >
-                    <i class="bi bi-check-circle me-1"></i>{{ __('Changes saved.') }}
-                </div>
-            @endif
+        <div class="flex items-center gap-4">
+            <button type="submit" class="inline-flex items-center px-5 py-2.5 bg-navy text-white text-sm font-medium rounded-xl hover:bg-navy-light shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-0.5">
+                {{ __('Update Profile') }}
+            </button>
         </div>
     </form>
 </section>

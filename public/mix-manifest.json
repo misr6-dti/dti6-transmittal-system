@@ -1,7 +1,4 @@
 {
-    "/js/app.js": "/js/app.js",
-    "/css/app.css": "/css/app.css",
-    "/css/vendor.css": "/css/vendor.css",
-    "/css/fonts/bootstrap-icons.woff": "/css/fonts/bootstrap-icons.woff",
-    "/css/fonts/bootstrap-icons.woff2": "/css/fonts/bootstrap-icons.woff2"
+    "/js/app.js": "/js/app.js?id=881d5d1273f3d83f25e11f5ded96a9d5",
+    "/css/app.css": "/css/app.css?id=c76cfb773e1b0b062991425aef9d411b"
 }

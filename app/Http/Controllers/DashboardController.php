@@ -12,34 +12,14 @@ class DashboardController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $isAdmin = $user->hasAnyRole(['Super Admin', 'Regional MIS']);
         $userOfficeId = $user->office_id;
 
-        if ($isAdmin) {
-            $stats = [
-                'total_sent' => Transmittal::count(),
-                'total_received' => Transmittal::where('status', 'Received')->count(),
-                'pending_outgoing' => Transmittal::where('sender_office_id', $userOfficeId)->where('status', 'Submitted')->count(),
-                'pending_incoming' => Transmittal::where('receiver_office_id', $userOfficeId)->where('status', 'Submitted')->count(),
-            ];
+        $stats = $this->getStats($user, $userOfficeId);
 
-            $recentTransmittals = Transmittal::with(['senderOffice', 'receiverOffice', 'items'])
-                ->latest()
-                ->paginate(5);
-        } else {
-            $stats = [
-                'total_sent' => Transmittal::where('sender_office_id', $userOfficeId)->count(),
-                'total_received' => Transmittal::where('receiver_office_id', $userOfficeId)->count(),
-                'pending_outgoing' => Transmittal::where('sender_office_id', $userOfficeId)->where('status', 'Submitted')->count(),
-                'pending_incoming' => Transmittal::where('receiver_office_id', $userOfficeId)->where('status', 'Submitted')->count(),
-            ];
-
-            $recentTransmittals = Transmittal::where('sender_office_id', $userOfficeId)
-                ->orWhere('receiver_office_id', $userOfficeId)
-                ->with(['senderOffice', 'receiverOffice', 'items'])
-                ->latest()
-                ->paginate(5);
-        }
+        $recentTransmittals = $this->getTransmittalQuery($user)
+            ->with(['items'])
+            ->latest()
+            ->paginate(5);
 
         return view('dashboard', compact('stats', 'recentTransmittals'));
     }
@@ -47,36 +27,15 @@ class DashboardController extends Controller
     public function stats()
     {
         $user = Auth::user();
-        $isAdmin = $user->hasAnyRole(['Super Admin', 'Regional MIS']);
+        $isAdmin = $user->isAdmin();
         $userOfficeId = $user->office_id;
 
-        if ($isAdmin) {
-            $stats = [
-                'total_sent' => \App\Models\Transmittal::count(),
-                'total_received' => \App\Models\Transmittal::where('status', 'Received')->count(),
-                'pending_outgoing' => \App\Models\Transmittal::where('sender_office_id', $userOfficeId)->where('status', 'Submitted')->count(),
-                'pending_incoming' => \App\Models\Transmittal::where('receiver_office_id', $userOfficeId)->where('status', 'Submitted')->count(),
-            ];
+        $stats = $this->getStats($user, $userOfficeId);
 
-            $recent = \App\Models\Transmittal::with(['senderOffice', 'receiverOffice'])
-                ->latest()
-                ->take(5)
-                ->get();
-        } else {
-            $stats = [
-                'total_sent' => \App\Models\Transmittal::where('sender_office_id', $userOfficeId)->count(),
-                'total_received' => \App\Models\Transmittal::where('receiver_office_id', $userOfficeId)->count(),
-                'pending_outgoing' => \App\Models\Transmittal::where('sender_office_id', $userOfficeId)->where('status', 'Submitted')->count(),
-                'pending_incoming' => \App\Models\Transmittal::where('receiver_office_id', $userOfficeId)->where('status', 'Submitted')->count(),
-            ];
-
-            $recent = \App\Models\Transmittal::where('sender_office_id', $userOfficeId)
-                ->orWhere('receiver_office_id', $userOfficeId)
-                ->with(['senderOffice', 'receiverOffice'])
-                ->latest()
-                ->take(5)
-                ->get();
-        }
+        $recent = $this->getTransmittalQuery($user)
+            ->latest()
+            ->take(5)
+            ->get();
 
         return response()->json([
             'stats' => $stats,
@@ -106,5 +65,34 @@ class DashboardController extends Controller
                 ];
             }),
         ]);
+    }
+
+    private function getStats($user, $userOfficeId)
+    {
+        $totalSent = Transmittal::where('sender_office_id', $userOfficeId)->count();
+        $totalReceived = Transmittal::where('receiver_office_id', $userOfficeId)->where('status', 'Received')->count();
+        $pendingOutgoing = Transmittal::where('sender_office_id', $userOfficeId)->where('status', 'Submitted')->count();
+        $pendingIncoming = Transmittal::where('receiver_office_id', $userOfficeId)->where('status', 'Submitted')->count();
+
+        return [
+            'total_sent' => $totalSent,
+            'total_received' => $totalReceived,
+            'pending_outgoing' => $pendingOutgoing,
+            'pending_incoming' => $pendingIncoming,
+        ];
+    }
+
+    private function getTransmittalQuery($user)
+    {
+        $query = Transmittal::query();
+
+        if (!$user->hasAnyRole(['Super Admin', 'Regional MIS'])) {
+            $query->where(function ($q) use ($user) {
+                $q->where('sender_office_id', $user->office_id)
+                  ->orWhere('receiver_office_id', $user->office_id);
+            });
+        }
+
+        return $query;
     }
 }

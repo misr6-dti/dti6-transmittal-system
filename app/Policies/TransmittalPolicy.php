@@ -19,7 +19,7 @@ class TransmittalPolicy
     public function view(User $user, Transmittal $transmittal): bool
     {
         // Super Admin and Regional MIS can view all
-        if ($user->hasAnyRole(['Super Admin', 'Regional MIS'])) {
+        if ($user->isAdmin()) {
             return true;
         }
 
@@ -42,7 +42,7 @@ class TransmittalPolicy
      */
     public function update(User $user, Transmittal $transmittal): bool
     {
-        if ($user->hasAnyRole(['Super Admin', 'Regional MIS'])) {
+        if ($user->isAdmin()) {
             return true;
         }
 
@@ -60,7 +60,7 @@ class TransmittalPolicy
      */
     public function delete(User $user, Transmittal $transmittal): bool
     {
-        if ($user->hasAnyRole(['Super Admin', 'Regional MIS'])) {
+        if ($user->isAdmin()) {
             return true;
         }
 
@@ -82,7 +82,7 @@ class TransmittalPolicy
         }
 
         // Admins can receive anything
-        if ($user->hasAnyRole(['Super Admin', 'Regional MIS'])) {
+        if ($user->isAdmin()) {
             return true;
         }
 

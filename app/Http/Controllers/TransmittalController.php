@@ -7,6 +7,9 @@ use App\Models\TransmittalItem;
 use App\Models\TransmittalLog;
 use App\Models\Office;
 use App\Services\NotificationService;
+use App\Services\QrCodeService;
+use App\Http\Requests\Transmittal\StoreTransmittalRequest;
+use App\Http\Requests\Transmittal\UpdateTransmittalRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -54,7 +57,7 @@ class TransmittalController extends Controller
         }
 
         // Mandatory office filtering for non-admins
-        if (!Auth::user()->hasAnyRole(['Super Admin', 'Regional MIS'])) {
+        if (!Auth::user()->isAdmin()) {
             $userOfficeId = Auth::user()->office_id;
             $query->where(function($q) use ($userOfficeId) {
                 $q->where('sender_office_id', $userOfficeId)
@@ -97,7 +100,7 @@ class TransmittalController extends Controller
         // Get ALL offices first for hierarchy building
         $allOffices = Office::all();
         // Format with hierarchy
-        $formattedOffices = $this->formatOfficesHierarchy($allOffices);
+        $formattedOffices = Office::formatHierarchy($allOffices);
         // Now exclude user's own office from the final list
         $offices = $formattedOffices->filter(function($office) {
             return $office->id != Auth::user()->office_id;
@@ -120,38 +123,10 @@ class TransmittalController extends Controller
         return view('transmittals.create', compact('offices', 'nextRef'));
     }
 
-    public function store(Request $request)
+    public function store(StoreTransmittalRequest $request)
     {
-        $this->authorize('create', Transmittal::class);
-        // Pre-filter items: remove rows that are completely empty
-        if ($request->has('items')) {
-            $items = array_values(array_filter($request->items, function ($item) {
-                return !empty($item['quantity']) || !empty($item['description']) || !empty($item['remarks']);
-            }));
-            $request->merge(['items' => $items]);
-        }
-
-        $isDraft = $request->status === 'Draft';
-
-        $rules = [
-            'reference_number' => 'required|unique:transmittals',
-            'transmittal_date' => 'required|date',
-            'receiver_office_id' => 'required|exists:offices,id',
-            'status' => 'required|in:Draft,Submitted',
-        ];
-
-        if (!$isDraft) {
-            $rules['items'] = 'required|array|min:1';
-            $rules['items.*.quantity'] = 'required|numeric|min:0.5';
-            $rules['items.*.description'] = 'required|string';
-        } else {
-            $rules['items'] = 'nullable|array';
-            $rules['items.*.quantity'] = 'nullable|numeric';
-            $rules['items.*.description'] = 'nullable|string';
-        }
-
-        $request->validate($rules);
-
+        // Authentication check handled by request authorize() or policy in view
+        
         $filteredItems = $request->items ?? [];
 
         DB::beginTransaction();
@@ -178,12 +153,7 @@ class TransmittalController extends Controller
                 ]);
             }
 
-            TransmittalLog::create([
-                'transmittal_id' => $transmittal->id,
-                'user_id' => Auth::id(),
-                'action' => $status,
-                'description' => "Transmittal #{$transmittal->reference_number} was {$status}.",
-            ]);
+            // Logging now handled by TransmittalObserver
 
             if ($status === 'Submitted') {
                 // Use NotificationService for cleaner notification creation
@@ -191,7 +161,8 @@ class TransmittalController extends Controller
             }
 
             DB::commit();
-            return redirect()->route('transmittals.show', $transmittal)->with('success', 'Transmittal submitted successfully.');
+            $msg = $status === 'Draft' ? 'Transmittal saved as draft.' : 'Transmittal submitted successfully.';
+            return redirect()->route('transmittals.show', $transmittal)->with('success', $msg);
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Error saving transmittal: ' . $e->getMessage())->withInput();
@@ -203,7 +174,12 @@ class TransmittalController extends Controller
         $this->authorize('view', $transmittal);
         $transmittal->load(['sender', 'senderOffice', 'receiverOffice', 'receiver', 'items', 'logs.user']);
         
-        $qrcode = $this->generateQrCode($transmittal);
+        // Ensure qr_token exists
+        if (!$transmittal->qr_token) {
+            $transmittal->update(['qr_token' => $transmittal->generateUniqueQrToken()]);
+        }
+        $trackingUrl = route('transmittals.public-track', ['qr_token' => $transmittal->qr_token]);
+        $qrcode = QrCodeService::generate($trackingUrl);
         
         return view('transmittals.show', compact('transmittal', 'qrcode'));
     }
@@ -224,7 +200,7 @@ class TransmittalController extends Controller
     public function edit(Transmittal $transmittal)
     {
         $this->authorize('update', $transmittal);
-        if ($transmittal->status !== 'Draft' && !Auth::user()->hasAnyRole(['Super Admin', 'Regional MIS'])) {
+        if ($transmittal->status !== 'Draft' && !Auth::user()->isAdmin()) {
             if ($transmittal->status === 'Received') {
                 return redirect()->route('transmittals.show', $transmittal)->with('error', 'Received transmittals cannot be edited.');
             }
@@ -233,7 +209,7 @@ class TransmittalController extends Controller
         // Get ALL offices first for hierarchy building
         $allOffices = Office::all();
         // Format with hierarchy
-        $formattedOffices = $this->formatOfficesHierarchy($allOffices);
+        $formattedOffices = Office::formatHierarchy($allOffices);
         // Now exclude user's own office from the final list
         $offices = $formattedOffices->filter(function($office) {
             return $office->id != Auth::user()->office_id;
@@ -242,21 +218,11 @@ class TransmittalController extends Controller
         return view('transmittals.edit', compact('transmittal', 'offices'));
     }
 
-    public function update(Request $request, Transmittal $transmittal)
+    public function update(UpdateTransmittalRequest $request, Transmittal $transmittal)
     {
         $this->authorize('update', $transmittal);
-        $request->validate([
-            'reference_number' => 'required|unique:transmittals,reference_number,' . $transmittal->id,
-            'transmittal_date' => 'required|date',
-            'receiver_office_id' => 'required|exists:offices,id',
-            'items' => 'required|array|min:1',
-            'items.*.quantity' => 'required|numeric|min:0.5',
-            'items.*.description' => 'required|string',
-        ]);
-
-        $filteredItems = array_filter($request->items, function($item) {
-            return !empty($item['quantity']) && !empty($item['description']);
-        });
+        
+        $filteredItems = $request->items ?? [];
 
         DB::beginTransaction();
         try {
@@ -284,18 +250,23 @@ class TransmittalController extends Controller
 
             $logAction = ($oldStatus === 'Draft' && $newStatus === 'Submitted') ? 'Submitted' : 'Edited';
             
-            TransmittalLog::create([
-                'transmittal_id' => $transmittal->id,
-                'user_id' => Auth::id(),
-                'action' => $logAction,
-                'description' => "Transmittal #{$transmittal->reference_number} was {$logAction}.",
-            ]);
+            $logAction = ($oldStatus === 'Draft' && $newStatus === 'Submitted') ? 'Submitted' : 'Edited';
+            
+            // Logging now handled by TransmittalObserver
+
+            // Notify receiver if standard user is submitting a draft
+            if ($oldStatus === 'Draft' && $newStatus === 'Submitted') {
+                NotificationService::notifyTransmittalCreated($transmittal);
+            }
 
             DB::commit();
-            return redirect()->route('transmittals.show', $transmittal)->with('success', 'Transmittal updated successfully.');
+            $msg = $newStatus === 'Submitted' && $oldStatus === 'Draft'
+                ? 'Transmittal submitted successfully.'
+                : 'Transmittal updated successfully.';
+            return redirect()->route('transmittals.show', $transmittal)->with('success', $msg);
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Error updating transmittal.')->withInput();
+            return back()->with('error', 'Error updating transmittal: ' . $e->getMessage())->withInput();
         }
     }
 
@@ -314,12 +285,7 @@ class TransmittalController extends Controller
                 'received_at' => now(),
             ]);
 
-            TransmittalLog::create([
-                'transmittal_id' => $transmittal->id,
-                'user_id' => Auth::id(),
-                'action' => 'Received',
-                'description' => "Transmittal #{$transmittal->reference_number} marked as Received by " . Auth::user()->name,
-            ]);
+            // Logging now handled by TransmittalObserver
 
             // Use NotificationService for cleaner notification creation
             NotificationService::notifyTransmittalReceived($transmittal);
@@ -335,7 +301,7 @@ class TransmittalController extends Controller
     public function destroy(Transmittal $transmittal)
     {
         $this->authorize('delete', $transmittal);
-        if ($transmittal->status === 'Received' && !Auth::user()->hasAnyRole(['Super Admin', 'Regional MIS'])) {
+        if ($transmittal->status === 'Received' && !Auth::user()->isAdmin()) {
             return back()->with('error', 'Received transmittals cannot be deleted.');
         }
 
@@ -348,7 +314,11 @@ class TransmittalController extends Controller
         $this->authorize('view', $transmittal);
         $transmittal->load(['sender', 'senderOffice', 'receiverOffice', 'receiver', 'items']);
         
-        $qrcode = $this->generateQrCode($transmittal);
+        if (!$transmittal->qr_token) {
+            $transmittal->update(['qr_token' => $transmittal->generateUniqueQrToken()]);
+        }
+        $trackingUrl = route('transmittals.public-track', ['qr_token' => $transmittal->qr_token]);
+        $qrcode = QrCodeService::generate($trackingUrl);
         
         $pdf = Pdf::loadView('transmittals.pdf', compact('transmittal', 'qrcode'))
                   ->setPaper('a4', 'portrait');
@@ -356,27 +326,7 @@ class TransmittalController extends Controller
         return $pdf->download("Transmittal-{$transmittal->reference_number}.pdf");
     }
 
-    private function generateQrCode(Transmittal $transmittal)
-    {
-        // Ensure qr_token exists (for existing transmittals created before qr_token was added)
-        if (!$transmittal->qr_token) {
-            $transmittal->update(['qr_token' => $transmittal->generateUniqueQrToken()]);
-        }
-
-        // Generate QR code that points to public tracking page using short QR token
-        $trackingUrl = route('transmittals.public-track', ['qr_token' => $transmittal->qr_token]);
-
-        $options = new \chillerlan\QRCode\QROptions([
-            'imageTransparent' => false,
-            'scale' => 5,
-            'outputType' => \chillerlan\QRCode\QRCode::OUTPUT_MARKUP_SVG,
-            'eccLevel' => \chillerlan\QRCode\QRCode::ECC_L,
-        ]);
-
-        $out = (new \chillerlan\QRCode\QRCode($options))->render($trackingUrl);
-        
-        return $out;
-    }
+        // generateQrCode removed and replaced by Service
 
     public function updateItems(Request $request, Transmittal $transmittal)
     {
@@ -397,7 +347,7 @@ class TransmittalController extends Controller
                 }
             }
 
-            // Log the update
+            // Log the update - Keeping this manual log as Observer doesn't handle items individually well
             TransmittalLog::create([
                 'transmittal_id' => $transmittal->id,
                 'user_id' => Auth::id(),
@@ -411,39 +361,4 @@ class TransmittalController extends Controller
         }
     }
 
-    /**
-     * Format offices with hierarchy for dropdown display
-     * Returns collection with prefixed codes showing the office structure
-     */
-    private function formatOfficesHierarchy($offices, $parentId = null, $prefix = '')
-    {
-        $result = [];
-        
-        // Convert to array for easier iteration
-        $officesArray = $offices->toArray();
-        
-        foreach ($officesArray as $office) {
-            // Only show offices matching current parent level
-            if (($office['parent_id'] === $parentId) || ($parentId === null && empty($office['parent_id']))) {
-                // Create display name with hierarchy using code
-                $displayName = $prefix . $office['code'] . ' (' . $office['type'] . ')';
-                
-                // Create a new object with display_name
-                $officeObj = (object) $office;
-                $officeObj->display_name = $displayName;
-                $result[] = $officeObj;
-                
-                // Recursively add children with increased indentation
-                $childResult = $this->formatOfficesHierarchy(
-                    $offices, 
-                    $office['id'], 
-                    $prefix . '&nbsp;&nbsp;&nbsp;'
-                );
-                // Convert collection to array for merging
-                $result = array_merge($result, $childResult->toArray());
-            }
-        }
-        
-        return collect($result);
-    }
 }

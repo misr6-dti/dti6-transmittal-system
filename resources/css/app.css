@@ -1,24 +1,24 @@
-
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Fix Bootstrap/Tailwind Collapse Collision */
-.accordion-collapse.collapse:not(.show) {
-    display: none !important;
-}
-.accordion-collapse.collapse.show {
-    display: block !important;
-}
-.collapse:not(.show):not(.navbar-collapse) {
-    display: none;
-}
-.navbar-collapse.collapse {
-    visibility: visible !important;
-}
-@media (min-width: 992px) {
-    .navbar-expand-lg .navbar-collapse.collapse {
-        display: flex !important;
-    }
+@layer components {
+  /* Custom Buttons matching DTI Navy Theme */
+  .btn-navy { 
+    @apply bg-navy text-white font-semibold px-4 py-2 rounded-xl transition-all duration-200 hover:bg-navy-dark hover:-translate-y-0.5 shadow-sm; 
+  }
+  
+  .btn-outline-navy { 
+    @apply text-navy border border-navy hover:bg-navy hover:text-white px-4 py-2 rounded-xl transition-all duration-200; 
+  }
+  
+  /* Status Badges */
+  .status-badge { 
+    @apply inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider whitespace-nowrap; 
+  }
+  
+  /* Form Controls */
+  .form-control {
+    @apply mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-navy focus:ring focus:ring-navy focus:ring-opacity-50 transition-colors duration-200;
+  }
 }

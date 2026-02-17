@@ -40,7 +40,7 @@ class RolesAndPermissionsSeeder extends Seeder
             ->givePermissionTo(['view transmittals', 'receive transmittals', 'view reports']);
 
         Role::findOrCreate('Office Staff')
-            ->givePermissionTo(['view transmittals', 'create transmittals', 'receive transmittals']);
+            ->givePermissionTo(['view transmittals', 'create transmittals', 'receive transmittals', 'edit transmittals', 'delete transmittals']);
             
         Role::findOrCreate('Regional MIS')
             ->givePermissionTo(Permission::all());

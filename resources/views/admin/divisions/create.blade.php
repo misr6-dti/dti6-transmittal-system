@@ -3,36 +3,34 @@
 @section('content')
 <div class="mb-4 no-print">
     <nav aria-label="breadcrumb">
-        <ol class="breadcrumb mb-1">
-            <li class="breadcrumb-item"><a href="{{ route('admin.divisions.index') }}" class="text-navy">Division Management</a></li>
-            <li class="breadcrumb-item active">New Division</li>
+        <ol class="flex items-center space-x-2 text-sm">
+            <li class="text-navy hover:text-navy-light"><a href="{{ route('admin.divisions.index') }}" class="text-navy">Division Management</a></li>
+            <li class="text-slate-500">New Division</li>
         </ol>
     </nav>
-    <h2 class="fw-extrabold mb-0">Create New Division</h2>
+    <h2 class="text-2xl font-extrabold text-navy">Create New Division</h2>
 </div>
 
 <div class="row">
     <div class="col-lg-6">
-        <div class="card shadow-sm border-0">
-            <div class="card-body p-4 p-md-5">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100">
+            <div class="p-6 md:p-10">
                 <form action="{{ route('admin.divisions.store') }}" method="POST">
                     @csrf
                     
                     <div class="mb-4">
-                        <label class="form-label fw-bold small text-uppercase">Division Name</label>
-                        <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" placeholder="e.g. Business Development Division" required autofocus>
-                        @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Division Name</label>
+                        <input type="text" name="name" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-navy/20 focus:border-navy text-sm transition-all @error('name') border-red-500 focus:border-red-500 focus:ring-red-200 @enderror" value="{{ old('name') }}" placeholder="e.g. Business Development Division" required autofocus>
                     </div>
 
                     <div class="mb-4">
-                        <label class="form-label fw-bold small text-uppercase">Division Code</label>
-                        <input type="text" name="code" class="form-control @error('code') is-invalid @enderror" value="{{ old('code') }}" placeholder="e.g. BDD" required>
-                        @error('code')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Division Code</label>
+                        <input type="text" name="code" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-navy/20 focus:border-navy text-sm transition-all @error('code') border-red-500 focus:border-red-500 focus:ring-red-200 @enderror" value="{{ old('code') }}" placeholder="e.g. BDD" required>
                     </div>
 
                     <div class="mb-4">
-                        <label class="form-label fw-bold small text-uppercase">Office</label>
-                        <select name="office_id" class="form-select @error('office_id') is-invalid @enderror" required>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Office</label>
+                        <select name="office_id" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-navy/20 focus:border-navy text-sm transition-all appearance-none @error('office_id') border-red-500 focus:border-red-500 focus:ring-red-200 @enderror" required>
                             <option value="">Select Office</option>
                             @foreach ($offices as $office)
                                 <option value="{{ $office->id }}" {{ old('office_id') == $office->id ? 'selected' : '' }}>
@@ -40,13 +38,12 @@
                                 </option>
                             @endforeach
                         </select>
-                        @error('office_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
 
-                    <div class="d-flex justify-content-end gap-2 mt-5">
-                        <a href="{{ route('admin.divisions.index') }}" class="btn btn-light px-4">Cancel</a>
-                        <button type="submit" class="btn btn-navy px-5">
-                            <i class="bi bi-plus-circle me-2"></i>Create Division
+                    <div class="flex justify-end gap-2 mt-5">
+                        <a href="{{ route('admin.divisions.index') }}" class="inline-flex items-center px-4 py-2.5 bg-white border border-slate-200 text-slate-600 text-sm font-medium rounded-xl hover:bg-slate-50 transition-colors">Cancel</a>
+                        <button type="submit" class="inline-flex items-center px-5 py-2.5 bg-navy text-white text-sm font-medium rounded-xl hover:bg-navy-light shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-0.5">
+                            <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>Create Division
                         </button>
                     </div>
                 </form>

@@ -27,6 +27,6 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        \App\Models\Transmittal::observe(\App\Observers\TransmittalObserver::class);
     }
 }
