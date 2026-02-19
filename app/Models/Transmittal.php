@@ -7,11 +7,50 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use App\Models\Office;
 use App\Models\TransmittalItem;
+use Illuminate\Support\Facades\Auth;
 use App\Models\TransmittalLog;
 
 class Transmittal extends Model
 {
     use HasFactory;
+
+    /**
+     * Get the status display data for the transmittal based on the viewer.
+     */
+    public function getStatusDisplay(User $user = null): array
+    {
+        $user = $user ?? Auth::user();
+        
+        // Default fallback if no user context
+        if (!$user) {
+            return [
+                'label' => $this->status,
+                'class' => strtolower($this->status),
+            ];
+        }
+
+        $userOfficeId = $user->office_id;
+        $isAdmin = $user->hasRole('Admin');
+        
+        $status = $this->status;
+        $badgeClass = strtolower($status);
+        $displayStatus = $status;
+
+        if (!$isAdmin && $status === 'Submitted') {
+            if ($this->receiver_office_id == $userOfficeId) {
+                $displayStatus = 'To Receive';
+                $badgeClass = 'pending-arrival';
+            } elseif ($this->sender_office_id == $userOfficeId) {
+                $displayStatus = 'Pending Receipt';
+                $badgeClass = 'submitted';
+            }
+        }
+
+        return [
+            'label' => $displayStatus,
+            'class' => $badgeClass,
+        ];
+    }
 
     protected $fillable = [
         'reference_number',

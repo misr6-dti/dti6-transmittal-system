@@ -74,11 +74,25 @@ class DashboardController extends Controller
         $pendingOutgoing = Transmittal::where('sender_office_id', $userOfficeId)->where('status', 'Submitted')->count();
         $pendingIncoming = Transmittal::where('receiver_office_id', $userOfficeId)->where('status', 'Submitted')->count();
 
+        // Document Log Stats (Division Level)
+        $docLogsSent = 0;
+        $docLogsReceived = 0;
+        $docLogsPending = 0;
+
+        if ($user->division_id) {
+            $docLogsSent = \App\Models\DocumentLog::where('sender_division_id', $user->division_id)->count();
+            $docLogsReceived = \App\Models\DocumentLog::where('receiver_division_id', $user->division_id)->where('status', 'Received')->count();
+            $docLogsPending = \App\Models\DocumentLog::where('receiver_division_id', $user->division_id)->where('status', 'Submitted')->count();
+        }
+
         return [
             'total_sent' => $totalSent,
             'total_received' => $totalReceived,
             'pending_outgoing' => $pendingOutgoing,
             'pending_incoming' => $pendingIncoming,
+            'doc_logs_sent' => $docLogsSent,
+            'doc_logs_received' => $docLogsReceived,
+            'doc_logs_pending' => $docLogsPending,
         ];
     }
 
@@ -86,7 +100,7 @@ class DashboardController extends Controller
     {
         $query = Transmittal::query();
 
-        if (!$user->hasAnyRole(['Super Admin', 'Regional MIS'])) {
+        if (!$user->isAdmin()) {
             $query->where(function ($q) use ($user) {
                 $q->where('sender_office_id', $user->office_id)
                   ->orWhere('receiver_office_id', $user->office_id);

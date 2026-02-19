@@ -40,9 +40,9 @@
                 <a href="#transmittal-flow" class="block px-4 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50 hover:text-navy transition-colors">3. Transmittal Workflow</a>
                 <a href="#receiving" class="block px-4 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50 hover:text-navy transition-colors">4. Confirming Receipt</a>
                 <a href="#audit" class="block px-4 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50 hover:text-navy transition-colors">5. Audit History</a>
-                @hasanyrole('Super Admin|Regional MIS')
+                @role('Admin')
                 <a href="#admin" class="block px-4 py-3 text-sm font-bold text-blue-600 hover:bg-blue-50 transition-colors">6. Administration</a>
-                @endhasanyrole
+                @endrole
             </nav>
         </div>
     </div>
@@ -68,11 +68,11 @@
                     <h4 class="font-bold text-lg border-b border-slate-200 pb-3 mb-4 text-navy">2. User Roles & Access</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="p-4 bg-slate-50 rounded-xl border-l-4 border-navy">
-                            <h6 class="font-bold text-slate-800">Office Staff / Head</h6>
+                            <h6 class="font-bold text-slate-800">User</h6>
                             <p class="text-sm text-slate-500 mt-1">Manage office-specific document flows. Create transmittals and acknowledge receipt of incoming documents intended for their office.</p>
                         </div>
                         <div class="p-4 bg-slate-50 rounded-xl border-l-4 border-blue-500">
-                            <h6 class="font-bold text-slate-800">Regional MIS / Super Admin</h6>
+                            <h6 class="font-bold text-slate-800">Admin</h6>
                             <p class="text-sm text-slate-500 mt-1">System-wide oversight. Manage users, roles, and offices. Authorized to view the global system audit trail and provide technical support.</p>
                         </div>
                     </div>
@@ -178,13 +178,13 @@
                 </section>
 
                 <!-- Section: Admin (Conditional) -->
-                @hasanyrole('Super Admin|Regional MIS')
+                @role('Admin')
                 <section id="admin" class="mb-10 scroll-mt-24">
-                    <h4 class="font-bold text-lg border-b border-slate-200 pb-3 mb-4 text-blue-600">6. MIS Administration</h4>
+                    <h4 class="font-bold text-lg border-b border-slate-200 pb-3 mb-4 text-blue-600">6. Administration</h4>
                     <div class="bg-slate-50 p-5 rounded-xl space-y-4">
                         <div>
                             <h6 class="font-bold text-slate-800">User / Role Management</h6>
-                            <p class="text-sm text-slate-500 mt-1">Admins can manage user accounts, assign roles (Super Admin, Regional MIS, Office Head, Office Staff), and define granular permissions.</p>
+                            <p class="text-sm text-slate-500 mt-1">Admins can manage user accounts, assign roles (Admin, User), and define granular permissions.</p>
                         </div>
                         <div>
                             <h6 class="font-bold text-slate-800">Global Surveillance</h6>
@@ -192,7 +192,7 @@
                         </div>
                     </div>
                 </section>
-                @endhasanyrole
+                @endrole
 
             </div>
         </div>

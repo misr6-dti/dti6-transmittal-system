@@ -71,7 +71,7 @@ class NotificationService
     public static function notifyTransmittalCreated($transmittal)
     {
         $message = "A new transmittal {$transmittal->reference_number} has been created and is being sent from {$transmittal->senderOffice->code}.";
-        $link = route('transmittals.show', $transmittal->id);
+        $link = route('transmittals.show', $transmittal->id, false);
         
         static::notifyOffice(
             $transmittal->receiverOffice,
@@ -90,7 +90,7 @@ class NotificationService
     public static function notifyTransmittalReceived($transmittal)
     {
         $message = "Your transmittal {$transmittal->reference_number} has been received by {$transmittal->receiverOffice->code}.";
-        $link = route('transmittals.show', $transmittal->id);
+        $link = route('transmittals.show', $transmittal->id, false);
         
         static::notifyUser(
             $transmittal->sender,
@@ -110,11 +110,47 @@ class NotificationService
     public static function notifyTransmittalStatusChanged($transmittal, $previousStatus)
     {
         $message = "Transmittal {$transmittal->reference_number} status has changed from {$previousStatus} to {$transmittal->status}.";
-        $link = route('transmittals.show', $transmittal->id);
+        $link = route('transmittals.show', $transmittal->id, false);
         
         static::notifyUser(
             $transmittal->sender,
             "Status Update",
+            $message,
+            $link
+        );
+    }
+    /**
+     * Create notification for document log creation (Division to Division)
+     *
+     * @param $documentLog
+     * @return void
+     */
+    public static function notifyDocumentLogCreated($documentLog)
+    {
+        $message = "New document log {$documentLog->reference_number} from {$documentLog->senderDivision->code}.";
+        $link = route('document-logs.show', $documentLog->id, false);
+        
+        // Notify all users in the receiver division
+        $users = User::where('division_id', $documentLog->receiver_division_id)->get();
+        foreach ($users as $user) {
+            static::notifyUser($user, "Incoming Document", $message, $link);
+        }
+    }
+
+    /**
+     * Create notification for document log received
+     *
+     * @param $documentLog
+     * @return void
+     */
+    public static function notifyDocumentLogReceived($documentLog)
+    {
+        $message = "Your document {$documentLog->reference_number} was received by {$documentLog->receiverDivision->code}.";
+        $link = route('document-logs.show', $documentLog->id, false);
+        
+        static::notifyUser(
+            $documentLog->sender,
+            "Document Received",
             $message,
             $link
         );

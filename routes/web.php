@@ -20,6 +20,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('transmittals/{transmittal}/update-items', [App\Http\Controllers\TransmittalController::class, 'updateItems'])->name('transmittals.update-items');
     Route::get('transmittals/{transmittal}/pdf', [App\Http\Controllers\TransmittalController::class, 'downloadPdf'])->name('transmittals.pdf');
     
+    // Document Logs (Division-to-Division)
+    Route::resource('document-logs', App\Http\Controllers\DocumentLogController::class);
+    Route::patch('document-logs/{document_log}/receive', [App\Http\Controllers\DocumentLogController::class, 'receive'])->name('document-logs.receive');
+    
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

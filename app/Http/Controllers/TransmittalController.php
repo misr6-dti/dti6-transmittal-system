@@ -112,12 +112,24 @@ class TransmittalController extends Controller
         $officeCode = $userOffice ? $userOffice->code : 'UNK';
         $year = date('Y');
         
-        // Count transmittals from this office in the current year to determine sequence
-        $count = Transmittal::where('sender_office_id', Auth::user()->office_id)
+        // Find the last transmittal for this office and year to determine sequence
+        $lastTransmittal = Transmittal::where('sender_office_id', Auth::user()->office_id)
             ->whereYear('transmittal_date', $year)
-            ->count();
+            ->orderBy('id', 'desc')
+            ->first();
+
+        if ($lastTransmittal) {
+            // Extract sequence from T-CODE-YEAR-SEQ
+            // Expected format: T-OFFICE-202X-001
+            $parts = explode('-', $lastTransmittal->reference_number);
+            $lastSeq = end($parts);
+            // Ensure we have a numeric value
+            $nextSeq = intval($lastSeq) + 1;
+        } else {
+            $nextSeq = 1;
+        }
             
-        $sequence = str_pad($count + 1, 3, '0', STR_PAD_LEFT);
+        $sequence = str_pad($nextSeq, 3, '0', STR_PAD_LEFT);
         $nextRef = "T-{$officeCode}-{$year}-{$sequence}";
 
         return view('transmittals.create', compact('offices', 'nextRef'));

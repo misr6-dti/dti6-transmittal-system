@@ -80,7 +80,7 @@
                 <tr>
                     <th class="px-6 py-4 cursor-pointer hover:bg-slate-100 transition-colors">
                         <a href="{{ route('transmittals.index', array_merge(request()->input(), ['sort_by' => 'reference_number', 'sort_order' => ($sort['by'] === 'reference_number' && $sort['order'] === 'asc') ? 'desc' : 'asc'])) }}" class="flex items-center group">
-                            Reference #
+                            Ref #
                             @if($sort['by'] === 'reference_number')
                                 <span class="ml-2 text-navy">
                                     @if($sort['order'] === 'asc')
@@ -159,54 +159,58 @@
                             @endif
                         </a>
                     </th>
-                    <th class="px-6 py-4 text-right">Actions</th>
+                    <th class="px-6 py-4 text-right">Action</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
                 @forelse($transmittals as $t)
-                <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="px-6 py-4 font-bold text-navy whitespace-nowrap">{{ $t->reference_number }}</td>
-                    <td class="px-6 py-4">{{ \Carbon\Carbon::parse($t->transmittal_date)->format('M d, Y') }}</td>
-                    <td class="px-6 py-4"><span class="font-medium text-slate-700">{{ $t->senderOffice->code }}</span></td>
-                    <td class="px-6 py-4"><span class="font-medium text-slate-700">{{ $t->receiverOffice->code }}</span></td>
+                <tr class="hover:bg-slate-50 transition-colors group">
+                    <td class="px-6 py-4">
+                        <a href="{{ route('transmittals.show', $t) }}" class="text-navy hover:text-navy-light font-bold hover:underline transition-colors">
+                            {{ $t->reference_number }}
+                        </a>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="font-bold text-slate-700">{{ $t->transmittal_date->format('M d, Y') }}</div>
+                        <div class="text-xs text-slate-400">{{ $t->created_at->format('h:i A') }}</div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-mono font-medium bg-slate-50 text-navy border border-slate-200">
+                            {{ $t->senderOffice->code }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-mono font-medium bg-slate-50 text-slate-500 border border-slate-200">
+                            {{ $t->receiverOffice->code }}
+                        </span>
+                    </td>
                     <td class="px-6 py-4 max-w-xs truncate text-slate-500" title="{{ $t->items->first()->description ?? 'No items' }}">
                         {{ $t->items->first()->description ?? '---' }}
                     </td>
                     <td class="px-6 py-4">
                         @php
-                            $status = $t->status;
-                            $badgeClass = strtolower($status);
-                            $displayText = $status;
-
-                            if ($status === 'Submitted') {
-                                if (Auth::user()->office_id == $t->receiver_office_id) {
-                                    $displayText = 'To Receive';
-                                    $badgeClass = 'pending-arrival';
-                                } elseif (Auth::user()->office_id == $t->sender_office_id) {
-                                    $displayText = 'Pending Receipt';
-                                    $badgeClass = 'submitted';
-                                }
-                            }
+                            $statusData = $t->getStatusDisplay();
                         @endphp
-                        <span class="status-badge status-{{ $badgeClass }}">
-                            {{ $displayText }}
+                        <span class="status-badge status-{{ $statusData['class'] }}">
+                            {{ $statusData['label'] }}
                         </span>
                     </td>
                     <td class="px-6 py-4 text-right">
-                        <div class="inline-flex rounded-lg shadow-sm">
-                            <a href="{{ route('transmittals.show', $t) }}" class="px-3 py-2 bg-white border border-slate-200 rounded-l-lg hover:bg-slate-50 text-cyan-600 transition-colors">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                        <div class="flex items-center justify-end gap-2">
+                            <a href="{{ route('transmittals.show', $t) }}" class="inline-flex items-center justify-center w-8 h-8 rounded-full text-slate-400 hover:text-navy hover:bg-slate-100 transition-colors" title="View Details">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                             </a>
                             
                             @can('update', $t)
-                                <a href="{{ route('transmittals.edit', $t) }}" class="px-3 py-2 bg-white border-t border-b border-slate-200 hover:bg-slate-50 text-amber-500 transition-colors">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                <a href="{{ route('transmittals.edit', $t) }}" class="inline-flex items-center justify-center w-8 h-8 rounded-full text-slate-400 hover:text-amber-500 hover:bg-amber-50 transition-colors" title="Edit">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                 </a>
                             @endcan
 
                             @can('delete', $t)
                                 <button type="button" 
-                                    class="px-3 py-2 bg-white border-t border-b border-slate-200 hover:bg-red-50 text-red-500 transition-colors"
+                                    class="inline-flex items-center justify-center w-8 h-8 rounded-full text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                                    title="Delete"
                                     data-bs-toggle="modal" 
                                     data-bs-target="#confirmationModal"
                                     data-action="{{ route('transmittals.destroy', $t) }}"
@@ -215,13 +219,14 @@
                                     data-message="Are you sure you want to permanently delete this transmittal record? This action cannot be undone."
                                     data-btn-class="btn-danger"
                                     data-btn-text="Delete">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                 </button>
                             @endcan
 
                             @can('receive', $t)
                                 <button type="button" 
-                                    class="px-3 py-2 bg-white border border-slate-200 rounded-r-lg hover:bg-green-50 text-green-600 transition-colors"
+                                    class="inline-flex items-center justify-center w-8 h-8 rounded-full text-slate-400 hover:text-green-600 hover:bg-green-50 transition-colors"
+                                    title="Receive"
                                     data-bs-toggle="modal" 
                                     data-bs-target="#confirmationModal"
                                     data-action="{{ route('transmittals.receive', $t) }}"
@@ -230,7 +235,7 @@
                                     data-message="By confirming, you officially acknowledge that you have physically received the hard copy documents for Transmittal #{{ $t->reference_number }}."
                                     data-btn-class="btn-success"
                                     data-btn-text="Confirm Receipt">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                 </button>
                             @endcan
                         </div>
@@ -249,23 +254,10 @@
             </tbody>
         </table>
     </div>
+    
     @if($transmittals->hasPages())
     <div class="px-6 py-4 border-t border-slate-100 bg-slate-50/50">
-        <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div class="text-slate-500 text-sm">
-                Showing <strong>{{ $transmittals->firstItem() ?? 0 }}</strong> to <strong>{{ $transmittals->lastItem() ?? 0 }}</strong> 
-                of <strong>{{ $transmittals->total() }}</strong> results
-            </div>
-            <div class="w-full md:w-auto">
-                {{ $transmittals->appends(request()->input())->links() }}
-            </div>
-        </div>
-    </div>
-    @else
-    <div class="px-6 py-4 border-t border-slate-100 bg-slate-50/50">
-        <div class="text-slate-500 text-sm">
-            Showing <strong>{{ $transmittals->count() }}</strong> result{{ $transmittals->count() !== 1 ? 's' : '' }}
-        </div>
+        {{ $transmittals->appends(request()->input())->links('pagination::tailwind') }}
     </div>
     @endif
 </div>

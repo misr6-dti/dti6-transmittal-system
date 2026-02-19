@@ -14,7 +14,7 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $query = User::with(['office', 'roles']);
+        $query = User::with(['office', 'division', 'roles']);
 
         if ($request->search) {
             $query->where('name', 'like', "%{$request->search}%")
@@ -30,7 +30,7 @@ class UserController extends Controller
         $sortOrder = $request->get('sort_order', 'desc');
         
         // Validate sort parameters to prevent injection
-        $allowedSortFields = ['name', 'email', 'office_id', 'created_at'];
+        $allowedSortFields = ['name', 'email', 'office_id', 'division_id', 'created_at'];
         $allowedSortOrders = ['asc', 'desc'];
         
         if (!in_array($sortBy, $allowedSortFields)) {
@@ -58,7 +58,8 @@ class UserController extends Controller
     {
         $roles = Role::all();
         $offices = Office::all();
-        return view('admin.users.create', compact('roles', 'offices'));
+        $divisions = \App\Models\Division::all();
+        return view('admin.users.create', compact('roles', 'offices', 'divisions'));
     }
 
     public function store(Request $request)
@@ -69,6 +70,7 @@ class UserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'role' => ['required', 'exists:roles,name'],
             'office_id' => ['required', 'exists:offices,id'],
+            'division_id' => ['nullable', 'exists:divisions,id'],
         ]);
 
         $user = User::create([
@@ -76,6 +78,7 @@ class UserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'office_id' => $request->office_id,
+            'division_id' => $request->division_id,
         ]);
 
         $user->assignRole($request->role);
@@ -87,7 +90,8 @@ class UserController extends Controller
     {
         $roles = Role::all();
         $offices = Office::all();
-        return view('admin.users.edit', compact('user', 'roles', 'offices'));
+        $divisions = \App\Models\Division::all();
+        return view('admin.users.edit', compact('user', 'roles', 'offices', 'divisions'));
     }
 
     public function update(Request $request, User $user)
@@ -97,12 +101,14 @@ class UserController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
             'role' => ['required', 'exists:roles,name'],
             'office_id' => ['required', 'exists:offices,id'],
+            'division_id' => ['nullable', 'exists:divisions,id'],
         ]);
 
         $user->update([
             'name' => $request->name,
             'email' => $request->email,
             'office_id' => $request->office_id,
+            'division_id' => $request->division_id,
         ]);
 
         $user->syncRoles([$request->role]);

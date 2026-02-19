@@ -17,4 +17,19 @@ class Division extends Model
     {
         return $this->belongsTo(Office::class);
     }
+
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
+
+    public function sentDocumentLogs()
+    {
+        return $this->hasMany(DocumentLog::class, 'sender_division_id');
+    }
+
+    public function receivedDocumentLogs()
+    {
+        return $this->hasMany(DocumentLog::class, 'receiver_division_id');
+    }
 }

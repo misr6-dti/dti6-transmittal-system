@@ -56,49 +56,49 @@
                     <th class="px-6 py-4 cursor-pointer hover:bg-slate-100 transition-colors">
                         <a href="{{ route('admin.offices.index', array_merge(request()->input(), ['sort_by' => 'name', 'sort_order' => ($sort['by'] === 'name' && $sort['order'] === 'asc') ? 'desc' : 'asc'])) }}" class="flex items-center group">
                             Office Name
-                            @if($sort['by'] === 'name')
-                                <span class="ml-2 text-navy">
+                            <span class="ml-2 text-navy">
+                                @if($sort['by'] === 'name')
                                     @if($sort['order'] === 'asc')
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
                                     @else
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                                     @endif
-                                </span>
-                            @else
-                                <svg class="w-3 h-3 ml-2 text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path></svg>
-                            @endif
+                                @else
+                                    <svg class="w-3 h-3 text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path></svg>
+                                @endif
+                            </span>
                         </a>
                     </th>
                     <th class="px-6 py-4 cursor-pointer hover:bg-slate-100 transition-colors">
                         <a href="{{ route('admin.offices.index', array_merge(request()->input(), ['sort_by' => 'code', 'sort_order' => ($sort['by'] === 'code' && $sort['order'] === 'asc') ? 'desc' : 'asc'])) }}" class="flex items-center group">
                             Code
-                            @if($sort['by'] === 'code')
-                                <span class="ml-2 text-navy">
+                            <span class="ml-2 text-navy">
+                                @if($sort['by'] === 'code')
                                     @if($sort['order'] === 'asc')
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
                                     @else
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                                     @endif
-                                </span>
-                            @else
-                                <svg class="w-3 h-3 ml-2 text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path></svg>
-                            @endif
+                                @else
+                                    <svg class="w-3 h-3 text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path></svg>
+                                @endif
+                            </span>
                         </a>
                     </th>
                     <th class="px-6 py-4 cursor-pointer hover:bg-slate-100 transition-colors">
                         <a href="{{ route('admin.offices.index', array_merge(request()->input(), ['sort_by' => 'type', 'sort_order' => ($sort['by'] === 'type' && $sort['order'] === 'asc') ? 'desc' : 'asc'])) }}" class="flex items-center group">
                             Type
-                            @if($sort['by'] === 'type')
-                                <span class="ml-2 text-navy">
+                            <span class="ml-2 text-navy">
+                                @if($sort['by'] === 'type')
                                     @if($sort['order'] === 'asc')
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
                                     @else
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                                     @endif
-                                </span>
-                            @else
-                                <svg class="w-3 h-3 ml-2 text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path></svg>
-                            @endif
+                                @else
+                                    <svg class="w-3 h-3 text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path></svg>
+                                @endif
+                            </span>
                         </a>
                     </th>
                     <th class="px-6 py-4">Parent Office</th>
@@ -107,9 +107,13 @@
             </thead>
             <tbody class="divide-y divide-slate-100">
                 @forelse($offices as $office)
-                <tr class="hover:bg-slate-50 transition-colors">
+                <tr class="hover:bg-slate-50 transition-colors group">
                     <td class="px-6 py-4 font-bold text-slate-700">{{ $office->name }}</td>
-                    <td class="px-6 py-4">{{ $office->code }}</td>
+                    <td class="px-6 py-4">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-mono font-medium bg-slate-50 text-slate-600 border border-slate-200">
+                            {{ $office->code }}
+                        </span>
+                    </td>
                     <td class="px-6 py-4">
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
                             {{ $office->type }}
@@ -119,12 +123,12 @@
                         {{ $office->parent->name ?? '—' }}
                     </td>
                     <td class="px-6 py-4 text-right">
-                        <div class="inline-flex rounded-lg shadow-sm">
-                            <a href="{{ route('admin.offices.edit', $office) }}" class="px-3 py-2 bg-white border border-slate-200 rounded-l-lg hover:bg-slate-50 text-amber-500 transition-colors" title="Edit">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                        <div class="flex items-center justify-end gap-2">
+                            <a href="{{ route('admin.offices.edit', $office) }}" class="inline-flex items-center justify-center w-8 h-8 rounded-full text-slate-400 hover:text-amber-500 hover:bg-amber-50 transition-colors" title="Edit">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                             </a>
                             <button type="button" 
-                                class="px-3 py-2 bg-white border-t border-b border-r border-slate-200 rounded-r-lg hover:bg-red-50 text-red-500 transition-colors"
+                                class="inline-flex items-center justify-center w-8 h-8 rounded-full text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors"
                                 title="Delete Office"
                                 data-bs-toggle="modal" 
                                 data-bs-target="#confirmationModal"
@@ -134,18 +138,15 @@
                                 data-message="Are you sure you want to delete '{{ $office->name }}'?"
                                 data-btn-class="btn-danger"
                                 data-btn-text="Delete">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                             </button>
                         </div>
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" class="px-6 py-12 text-center">
-                        <div class="text-slate-300 mb-3 block mx-auto w-16 h-16">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m3-4h1m-1 4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                        </div>
-                        <h5 class="text-slate-500 font-medium">No offices found.</h5>
+                    <td colspan="5" class="px-6 py-12 text-center text-slate-400 italic">
+                        No offices found.
                     </td>
                 </tr>
                 @endforelse
@@ -154,21 +155,7 @@
     </div>
     @if($offices->hasPages())
     <div class="px-6 py-4 border-t border-slate-100 bg-slate-50/50">
-        <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div class="text-slate-500 text-sm">
-                Showing <strong>{{ $offices->firstItem() ?? 0 }}</strong> to <strong>{{ $offices->lastItem() ?? 0 }}</strong> 
-                of <strong>{{ $offices->total() }}</strong> office{{ $offices->total() !== 1 ? 's' : '' }}
-            </div>
-            <div class="w-full md:w-auto">
-                {{ $offices->appends(request()->input())->links() }}
-            </div>
-        </div>
-    </div>
-    @else
-    <div class="px-6 py-4 border-t border-slate-100 bg-slate-50/50">
-        <div class="text-slate-500 text-sm">
-            Showing <strong>{{ $offices->count() }}</strong> office{{ $offices->count() !== 1 ? 's' : '' }}
-        </div>
+        {{ $offices->appends(request()->input())->links('pagination::tailwind') }}
     </div>
     @endif
 </div>

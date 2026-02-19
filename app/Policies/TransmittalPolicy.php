@@ -18,7 +18,7 @@ class TransmittalPolicy
      */
     public function view(User $user, Transmittal $transmittal): bool
     {
-        // Super Admin and Regional MIS can view all
+        // Admin can view all
         if ($user->isAdmin()) {
             return true;
         }

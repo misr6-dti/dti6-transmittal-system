@@ -51,7 +51,7 @@
 
                 <div class="{{ isset($info) ? 'w-full lg:w-5/12' : (isset($wide) && $wide ? 'w-full md:w-10/12 lg:w-8/12' : 'w-full md:w-8/12 lg:w-5/12 xl:w-4/12') }}">
                     <div class="glass-card rounded-[2.5rem] p-8 md:p-12 shadow-2xl relative overflow-hidden animate-in fade-in zoom-in duration-700">
-                        <div class="flex justify-center mb-8">
+                        <div class="flex justify-center">
                             <img src="{{ asset('images/dti-logo.png') }}" alt="DTI Logo" class="w-32 h-auto">
                         </div>
                         {{ $slot }}

@@ -6,191 +6,161 @@
         window.location.reload();
     }
 }" x-init="setInterval(() => refresh(), 60000)">
-    <!-- Stats Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <!-- Total Sent -->
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
-            <div class="flex items-center mb-4">
-                <div class="bg-blue-50 p-3 rounded-xl text-blue-600 mr-4">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+    
+    <!-- Welcome Header -->
+    <div class="mb-8 bg-gradient-to-r from-navy to-navy-light rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
+        <!-- Background Decoration -->
+        <div class="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 rounded-full bg-white/5 blur-3xl"></div>
+
+        <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold mb-1">Good morning, {{ Auth::user()->name }}</h1>
+                <div class="flex items-center text-blue-100 text-sm md:text-base">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                    {{ Auth::user()->office->name }}
                 </div>
-                <div>
-                    <div class="text-xs font-bold uppercase tracking-wider text-slate-500">Total Sent</div>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <!-- Live Clock -->
+                <div class="hidden md:block text-right mr-4"
+                     x-data="{ 
+                        time: '',
+                        date: '',
+                        updateTime() {
+                            const now = new Date();
+                            this.time = now.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit' });
+                            this.date = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                        }
+                     }" 
+                     x-init="updateTime(); setInterval(() => updateTime(), 1000)">
+                    <div class="text-2xl font-bold leading-none" x-text="time"></div>
+                    <div class="text-xs text-blue-200 font-medium uppercase tracking-wider" x-text="date"></div>
+                </div>
+
+                <a href="{{ route('transmittals.create') }}" class="bg-white text-navy font-bold py-3 px-6 rounded-xl hover:bg-blue-50 transition-all shadow-md flex items-center transform hover:-translate-y-0.5">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    New Transmittal
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+        
+        <!-- Office Overview (Stats) -->
+        <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="font-bold text-navy text-lg flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    Office Overview
+                </h3>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <!-- Sent -->
+                <div class="p-4 rounded-xl bg-slate-50 border border-slate-100 group hover:border-blue-200 transition-colors">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="text-xs font-bold uppercase tracking-wider text-slate-500">Sent</div>
+                        <div class="text-blue-600 bg-blue-100 p-1.5 rounded-lg group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                        </div>
+                    </div>
                     <div class="text-2xl font-extrabold text-navy" id="totalSentDash">{{ $stats['total_sent'] }}</div>
                 </div>
-            </div>
-            <div class="text-xs text-slate-400">From {{ Auth::user()->office->name }}</div>
-        </div>
 
-        <!-- Total Received -->
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
-            <div class="flex items-center mb-4">
-                <div class="bg-green-50 p-3 rounded-xl text-green-600 mr-4">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
-                </div>
-                <div>
-                    <div class="text-xs font-bold uppercase tracking-wider text-slate-500">Total Received</div>
+                <!-- Received -->
+                <div class="p-4 rounded-xl bg-slate-50 border border-slate-100 group hover:border-green-200 transition-colors">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="text-xs font-bold uppercase tracking-wider text-slate-500">Received</div>
+                        <div class="text-green-600 bg-green-100 p-1.5 rounded-lg group-hover:bg-green-600 group-hover:text-white transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+                        </div>
+                    </div>
                     <div class="text-2xl font-extrabold text-navy" id="totalReceivedDash">{{ $stats['total_received'] }}</div>
                 </div>
-            </div>
-            <div class="text-xs text-slate-400">At {{ Auth::user()->office->name }}</div>
-        </div>
 
-        <!-- Pending Outgoing -->
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
-            <div class="flex items-center mb-4">
-                <div class="bg-amber-50 p-3 rounded-xl text-amber-600 mr-4">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                </div>
-                <div>
-                    <div class="text-xs font-bold uppercase tracking-wider text-slate-500">Pending Outgoing</div>
+                <!-- Pending Out -->
+                <div class="p-4 rounded-xl bg-slate-50 border border-slate-100 group hover:border-amber-200 transition-colors">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="text-xs font-bold uppercase tracking-wider text-slate-500">Pending Out</div>
+                        <div class="text-amber-600 bg-amber-100 p-1.5 rounded-lg group-hover:bg-amber-600 group-hover:text-white transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                    </div>
                     <div class="text-2xl font-extrabold text-navy" id="pendingOutgoingDash">{{ $stats['pending_outgoing'] }}</div>
                 </div>
-            </div>
-            <div class="text-xs text-amber-600 font-medium">Awaiting receipt</div>
-        </div>
 
-        <!-- Pending Incoming -->
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
-            <div class="flex items-center mb-4">
-                <div class="bg-cyan-50 p-3 rounded-xl text-cyan-600 mr-4">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                </div>
-                <div>
-                    <div class="text-xs font-bold uppercase tracking-wider text-slate-500">Pending Incoming</div>
+                <!-- Pending In -->
+                <div class="p-4 rounded-xl bg-slate-50 border border-slate-100 group hover:border-cyan-200 transition-colors">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="text-xs font-bold uppercase tracking-wider text-slate-500">Pending In</div>
+                        <div class="text-cyan-600 bg-cyan-100 p-1.5 rounded-lg group-hover:bg-cyan-600 group-hover:text-white transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                        </div>
+                    </div>
                     <div class="text-2xl font-extrabold text-navy" id="pendingIncomingDash">{{ $stats['pending_incoming'] }}</div>
                 </div>
             </div>
-            <div class="text-xs text-cyan-600 font-medium">To be claimed</div>
-        </div>
-    </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Recent Transmittals -->
-        <div class="lg:col-span-2">
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 h-full flex flex-col">
-                <div class="p-6 border-b border-slate-100 flex justify-between items-center">
-                    <h3 class="font-bold text-navy text-lg">Recent Office Transmittals</h3>
-                    <a href="{{ route('transmittals.index') }}" class="text-xs font-bold uppercase tracking-wider text-slate-500 hover:text-navy transition-colors bg-slate-50 px-3 py-2 rounded-lg">View All</a>
-                </div>
-                <div class="flex-grow overflow-x-auto">
-                    <table class="w-full text-left text-sm text-slate-600">
-                        <thead class="bg-slate-50 text-xs font-bold uppercase text-slate-500 tracking-wider">
-                            <tr>
-                                <th class="px-6 py-4">Ref #</th>
-                                <th class="px-6 py-4">Date</th>
-                                <th class="px-6 py-4">Origin</th>
-                                <th class="px-6 py-4">Destination</th>
-                                <th class="px-6 py-4">Status</th>
-                                <th class="px-6 py-4 text-right">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100" id="recentTransmittalsBody">
-                            @forelse($recentTransmittals as $t)
-                            <tr class="hover:bg-slate-50 transition-colors">
-                                <td class="px-6 py-4 font-bold text-navy">{{ $t->reference_number }}</td>
-                                <td class="px-6 py-4">{{ \Carbon\Carbon::parse($t->transmittal_date)->format('M d, Y') }}</td>
-                                <td class="px-6 py-4">{{ $t->senderOffice->name }}</td>
-                                <td class="px-6 py-4">{{ $t->receiverOffice->name }}</td>
-                                <td class="px-6 py-4">
-                                    @php
-                                        $userOfficeId = Auth::user()->office_id;
-                                        $isAdmin = Auth::user()->hasAnyRole(['Super Admin', 'Regional MIS']);
-                                        $displayStatus = $t->status;
-                                        $badgeClass = strtolower($t->status);
-
-                                        if (!$isAdmin && $t->status === 'Submitted') {
-                                            if ($t->receiver_office_id == $userOfficeId) {
-                                                $displayStatus = 'To Receive';
-                                                $badgeClass = 'pending-arrival';
-                                            } elseif ($t->sender_office_id == $userOfficeId) {
-                                                $displayStatus = 'Pending Receipt';
-                                                $badgeClass = 'submitted';
-                                            }
-                                        }
-                                    @endphp
-                                    <span class="status-badge status-{{ $badgeClass }}">
-                                        {{ $displayStatus }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <a href="{{ route('transmittals.show', $t) }}" class="px-2.5 py-1.5 text-xs font-medium text-navy bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">View</a>
-                                </td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="6" class="px-6 py-12 text-center text-slate-400 italic">No recent transmittals found.</td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-                @if($recentTransmittals->hasPages())
-                <div class="p-4 border-t border-slate-100">
-                    {{ $recentTransmittals->links() }}
-                </div>
-                @endif
-            </div>
         </div>
 
-        <!-- Quick Actions -->
-        <div class="lg:col-span-1">
-            <div class="bg-navy rounded-2xl shadow-lg shadow-navy/20 text-white h-full p-6 flex flex-col relative overflow-hidden">
-                <!-- Decorative background elements -->
-                <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-white/5 blur-2xl"></div>
-                <div class="absolute bottom-0 left-0 -ml-8 -mb-8 w-32 h-32 rounded-full bg-white/5 blur-2xl"></div>
+        <!-- Division Stats (Conditional) -->
+        <div class="lg:col-span-1 bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col">
+            @if(Auth::user()->division_id)
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="font-bold text-navy text-lg flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                        My Division
+                    </h3>
+                    <span class="px-2 py-1 rounded text-xs font-bold bg-navy text-white">{{ Auth::user()->division->code }}</span>
+                </div>
+
+                <div class="space-y-4 flex-grow">
+                    <!-- Division Sent -->
+                    <div class="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-100">
+                        <div class="flex items-center text-slate-600">
+                            <span class="w-2 h-2 rounded-full bg-indigo-500 mr-3"></span>
+                            <span class="text-sm font-medium">Documents Sent</span>
+                        </div>
+                        <span class="font-bold text-navy">{{ $stats['doc_logs_sent'] }}</span>
+                    </div>
+
+                    <!-- Division Received -->
+                    <div class="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-100">
+                        <div class="flex items-center text-slate-600">
+                            <span class="w-2 h-2 rounded-full bg-teal-500 mr-3"></span>
+                            <span class="text-sm font-medium">Documents Received</span>
+                        </div>
+                        <span class="font-bold text-navy">{{ $stats['doc_logs_received'] }}</span>
+                    </div>
+
+                    <!-- Division Pending -->
+                    <div class="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-100">
+                        <div class="flex items-center text-slate-600">
+                            <span class="w-2 h-2 rounded-full bg-pink-500 mr-3"></span>
+                            <span class="text-sm font-medium">Pending Receipt</span>
+                        </div>
+                        <span class="font-bold text-navy">{{ $stats['doc_logs_pending'] }}</span>
+                    </div>
+                </div>
                 
-                <div class="relative z-10">
-                    <h3 class="font-extrabold text-2xl mb-2">Manage Your Documents</h3>
-                    <p class="text-white/70 text-sm mb-8">Quickly create and track transmittals between Regional Office and Provincial Offices.</p>
-                    
-                    <div class="flex flex-col gap-3">
-                        <a href="{{ route('transmittals.create') }}" class="w-full bg-white text-navy font-bold py-3 px-4 rounded-xl hover:bg-white/90 transition-colors flex items-center justify-center shadow-md">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                            New Transmittal
-                        </a>
-                        <a href="{{ route('audit.index') }}" class="w-full bg-white/10 text-white font-bold py-3 px-4 rounded-xl hover:bg-white/20 transition-colors flex items-center justify-center border border-white/20">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            Audit History
-                        </a>
-                    </div>
+                <div class="mt-6 pt-4 border-t border-slate-100">
+                    <a href="{{ route('document-logs.index') }}" class="text-xs font-bold uppercase tracking-wider text-center block text-navy hover:text-navy-light transition-colors">
+                        View Document Logs &rarr;
+                    </a>
                 </div>
-
-                <div class="mt-8 pt-8 border-t border-white/10 relative z-10">
-                    <div class="text-xs font-bold uppercase tracking-widest text-white/40 mb-4">Standard Protocol</div>
-                    <ul class="space-y-3 text-sm text-white/70">
-                        <li class="flex items-start">
-                            <svg class="w-5 h-5 mr-2 text-green-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            <span>Prepare copies in triplicate</span>
-                        </li>
-                        <li class="flex items-start">
-                            <svg class="w-5 h-5 mr-2 text-green-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            <span>Verify Ref # before printing</span>
-                        </li>
-                        <li class="flex items-start">
-                            <svg class="w-5 h-5 mr-2 text-green-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            <span>Confirm receipt upon receiving the actual (hard) copy</span>
-                        </li>
-                    </ul>
-
-                    <div class="mt-8 bg-white/10 rounded-xl p-4 text-center backdrop-blur-sm" 
-                         x-data="{ 
-                            time: '',
-                            date: '',
-                            updateTime() {
-                                const now = new Date();
-                                this.time = now.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                                this.date = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
-                            }
-                         }" 
-                         x-init="updateTime(); setInterval(() => updateTime(), 1000)">
-                        <div class="text-xs font-bold uppercase tracking-widest text-white/40 mb-1">Official PH Time</div>
-                        <div class="text-2xl font-extrabold text-white tabular-nums leading-none mb-1" x-text="time"></div>
-                        <div class="text-xs text-white/60" x-text="date"></div>
-                    </div>
+            @else
+                <div class="flex flex-col items-center justify-center h-full text-center text-slate-400 py-8">
+                    <svg class="w-12 h-12 mb-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <p class="text-sm">You are not assigned to a division.</p>
                 </div>
-            </div>
+            @endif
         </div>
+
     </div>
+
+    <!-- Recent Transmittals Table -->
+    <x-dashboard.recent-transmittals :transmittals="$recentTransmittals" />
 </div>
 @endsection

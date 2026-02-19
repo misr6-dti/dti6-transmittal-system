@@ -65,6 +65,16 @@
                         </div>
 
                         <div class="space-y-2">
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Division (Optional)</label>
+                            <select name="division_id" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-navy/20 focus:border-navy text-sm transition-all @error('division_id') border-red-500 focus:border-red-500 focus:ring-red-200 @enderror">
+                                <option value="">Select Division</option>
+                                @foreach($divisions as $division)
+                                    <option value="{{ $division->id }}" {{ old('division_id') == $division->id ? 'selected' : '' }}>{{ $division->name }} ({{ $division->code }})</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="space-y-2">
                             <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Password</label>
                             <input type="password" name="password" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-navy/20 focus:border-navy text-sm transition-all @error('password') border-red-500 focus:border-red-500 focus:ring-red-200 @enderror" placeholder="••••••••" required>
                         </div>

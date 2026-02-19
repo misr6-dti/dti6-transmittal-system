@@ -37,6 +37,14 @@ Alpine.data('notifications', () => ({
     unread: [],
     open: false,
 
+    _headers() {
+        return {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            'ngrok-skip-browser-warning': 'true'
+        };
+    },
+
     init() {
         this.appUrl = document.querySelector('meta[name="app-url"]').getAttribute('content');
         this.fetchCount();
@@ -44,7 +52,7 @@ Alpine.data('notifications', () => ({
     },
 
     fetchCount() {
-        fetch(`${this.appUrl}/notifications/unread-count`)
+        fetch(`${this.appUrl}/notifications/unread-count`, { headers: this._headers() })
             .then(res => {
                 if (!res.ok) throw new Error(res.status);
                 return res.json();
@@ -52,13 +60,13 @@ Alpine.data('notifications', () => ({
             .then(data => {
                 this.count = data.count;
             })
-            .catch(() => { });
+            .catch(e => console.error('Notification count error:', e));
     },
 
     fetchList() {
         this.open = !this.open;
         if (this.open) {
-            fetch(`${this.appUrl}/notifications`)
+            fetch(`${this.appUrl}/notifications/unread`, { headers: this._headers() })
                 .then(res => {
                     if (!res.ok) throw new Error(res.status);
                     return res.json();
@@ -66,7 +74,7 @@ Alpine.data('notifications', () => ({
                 .then(data => {
                     this.unread = data;
                 })
-                .catch(() => { });
+                .catch(e => console.error('Notification list error:', e));
         }
     },
 
@@ -74,6 +82,7 @@ Alpine.data('notifications', () => ({
         fetch(`${this.appUrl}/notifications/${id}/read`, {
             method: 'POST',
             headers: {
+                ...this._headers(),
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                 'Content-Type': 'application/json'
             }
@@ -84,7 +93,7 @@ Alpine.data('notifications', () => ({
                 this.fetchCount();
                 this.fetchList();
             }
-        }).catch(() => { });
+        }).catch(e => console.error('Notification mark-read error:', e));
     }
 }));
 

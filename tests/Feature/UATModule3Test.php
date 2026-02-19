@@ -26,7 +26,7 @@ class UATModule3Test extends TestCase
         $user = User::factory()->create(['office_id' => $office->id]);
         
         // Assign the remediation role
-        $user->assignRole('Office Staff');
+        $user->assignRole('User');
 
         $this->actingAs($user);
 
@@ -61,7 +61,7 @@ class UATModule3Test extends TestCase
         $office = Office::factory()->create();
         $user = User::factory()->create(['office_id' => $office->id]);
         
-        $user->assignRole('Office Staff');
+        $user->assignRole('User');
         
         $this->actingAs($user);
 
@@ -93,7 +93,7 @@ class UATModule3Test extends TestCase
         $office = Office::factory()->create();
         $user = User::factory()->create(['office_id' => $office->id]);
         
-        $user->assignRole('Office Staff');
+        $user->assignRole('User');
         
         $this->actingAs($user);
 
@@ -131,7 +131,7 @@ class UATModule3Test extends TestCase
         $office = Office::factory()->create();
         $user = User::factory()->create(['office_id' => $office->id]);
         
-        $user->assignRole('Office Staff');
+        $user->assignRole('User');
         
         $this->actingAs($user);
 
