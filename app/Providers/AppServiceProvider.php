@@ -19,11 +19,28 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $appUrl = config('app.url');
-        if ($appUrl) {
-            \Illuminate\Support\Facades\URL::forceRootUrl($appUrl);
-            if (strpos($appUrl, 'https://') === 0) {
+        // Dynamically resolve the application base URL from the request.
+        // This ensures asset(), url(), and route() work correctly in
+        // subdirectory deployments (e.g. /dti6-tms/public) without
+        // requiring a perfectly configured APP_URL in .env.
+        if (isset($_SERVER['HTTP_HOST'])) {
+            $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+            $scriptName = $_SERVER['SCRIPT_NAME'] ?? '/index.php';
+            $basePath = str_replace('/index.php', '', $scriptName);
+            $baseUrl = $scheme . '://' . $_SERVER['HTTP_HOST'] . $basePath;
+
+            \Illuminate\Support\Facades\URL::forceRootUrl($baseUrl);
+            if ($scheme === 'https') {
                 \Illuminate\Support\Facades\URL::forceScheme('https');
+            }
+        } else {
+            // Fallback for CLI (artisan commands)
+            $appUrl = config('app.url');
+            if ($appUrl) {
+                \Illuminate\Support\Facades\URL::forceRootUrl($appUrl);
+                if (strpos($appUrl, 'https://') === 0) {
+                    \Illuminate\Support\Facades\URL::forceScheme('https');
+                }
             }
         }
 
