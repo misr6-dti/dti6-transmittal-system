@@ -71,7 +71,7 @@ class NotificationService
     public static function notifyTransmittalCreated($transmittal)
     {
         $message = "A new transmittal {$transmittal->reference_number} has been created and is being sent from {$transmittal->senderOffice->code}.";
-        $link = route('transmittals.show', $transmittal->id, false);
+        $link = route('transmittals.show', $transmittal->id);
         
         static::notifyOffice(
             $transmittal->receiverOffice,
@@ -90,7 +90,7 @@ class NotificationService
     public static function notifyTransmittalReceived($transmittal)
     {
         $message = "Your transmittal {$transmittal->reference_number} has been received by {$transmittal->receiverOffice->code}.";
-        $link = route('transmittals.show', $transmittal->id, false);
+        $link = route('transmittals.show', $transmittal->id);
         
         static::notifyUser(
             $transmittal->sender,
@@ -110,7 +110,7 @@ class NotificationService
     public static function notifyTransmittalStatusChanged($transmittal, $previousStatus)
     {
         $message = "Transmittal {$transmittal->reference_number} status has changed from {$previousStatus} to {$transmittal->status}.";
-        $link = route('transmittals.show', $transmittal->id, false);
+        $link = route('transmittals.show', $transmittal->id);
         
         static::notifyUser(
             $transmittal->sender,
@@ -128,7 +128,7 @@ class NotificationService
     public static function notifyDocumentLogCreated($documentLog)
     {
         $message = "New document log {$documentLog->reference_number} from {$documentLog->senderDivision->code}.";
-        $link = route('document-logs.show', $documentLog->id, false);
+        $link = route('document-logs.show', $documentLog->id);
         
         // Notify all users in the receiver division
         $users = User::where('division_id', $documentLog->receiver_division_id)->get();
@@ -146,7 +146,7 @@ class NotificationService
     public static function notifyDocumentLogReceived($documentLog)
     {
         $message = "Your document {$documentLog->reference_number} was received by {$documentLog->receiverDivision->code}.";
-        $link = route('document-logs.show', $documentLog->id, false);
+        $link = route('document-logs.show', $documentLog->id);
         
         static::notifyUser(
             $documentLog->sender,
