@@ -20,6 +20,16 @@ class Division extends Model
 
     public function users()
     {
-        return $this->hasMany(User::class, 'division_id');
+        return $this->hasMany(User::class);
+    }
+
+    public function sentDocumentLogs()
+    {
+        return $this->hasMany(DocumentLog::class, 'sender_division_id');
+    }
+
+    public function receivedDocumentLogs()
+    {
+        return $this->hasMany(DocumentLog::class, 'receiver_division_id');
     }
 }

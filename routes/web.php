@@ -8,7 +8,8 @@ Route::get('/', function () {
 });
 
 // Public Tracking Route (no authentication required)
-Route::get('/track/{qr_token}', [App\Http\Controllers\TransmittalController::class, 'publicTrack'])->name('transmittals.public-track');
+// Rate-limited to 60 requests/min per IP to prevent brute-force QR token enumeration (VAPT V-06)
+Route::get('/track/{qr_token}', [App\Http\Controllers\TransmittalController::class, 'publicTrack'])->middleware('throttle:60,1')->name('transmittals.public-track');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
@@ -18,6 +19,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('transmittals/{transmittal}/receive', [App\Http\Controllers\TransmittalController::class, 'receive'])->name('transmittals.receive');
     Route::post('transmittals/{transmittal}/update-items', [App\Http\Controllers\TransmittalController::class, 'updateItems'])->name('transmittals.update-items');
     Route::get('transmittals/{transmittal}/pdf', [App\Http\Controllers\TransmittalController::class, 'downloadPdf'])->name('transmittals.pdf');
+    
+    // Document Logs (Division-to-Division)
+    Route::resource('document-logs', App\Http\Controllers\DocumentLogController::class);
+    Route::patch('document-logs/{document_log}/receive', [App\Http\Controllers\DocumentLogController::class, 'receive'])->name('document-logs.receive');
     
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

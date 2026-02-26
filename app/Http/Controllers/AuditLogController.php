@@ -14,7 +14,7 @@ class AuditLogController extends Controller
         $query = TransmittalLog::with(['user.office', 'transmittal.senderOffice', 'transmittal.receiverOffice']);
 
         // Standard Office Isolation for non-admins
-        if (!$user->hasAnyRole(['Super Admin', 'Regional MIS'])) {
+        if ($user->isAdmin()) {
             $userOfficeId = $user->office_id;
             $query->whereHas('transmittal', function ($q) use ($userOfficeId) {
                 $q->where('sender_office_id', $userOfficeId)
@@ -91,7 +91,7 @@ class AuditLogController extends Controller
         $user = Auth::user();
         
         // Authorization check - ensure user has access to this log
-        if (!$user->hasAnyRole(['Super Admin', 'Regional MIS'])) {
+        if (!$user->isAdmin()) {
             $transmittal = $transmittalLog->transmittal;
             if ($transmittal->sender_office_id !== $user->office_id && 
                 $transmittal->receiver_office_id !== $user->office_id) {

@@ -22,110 +22,37 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- CSS Dependencies (Local) -->
-    <link rel="stylesheet" href="{{ asset('css/vendor.css') }}">
+    <!-- Assets -->
     <link rel="stylesheet" href="{{ asset(mix('css/app.css')) }}">
-
-    <!-- Custom Navy Theme -->
+    <script src="{{ asset(mix('js/app.js')) }}" defer></script>
     <style>
-        :root {
-            --dti-navy: #001f3f;
-            --dti-dark: #001226;
-            --dti-light: #f8fafc;
-            --dti-gray: #64748b;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--dti-light);
-            color: #1e293b;
-        }
-
-        .navbar-custom {
-            background-color: var(--dti-navy);
-            padding: 1.25rem 0;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1030;
-        }
-
-        .navbar-brand {
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            color: #fff !important;
-            font-size: 1.5rem;
-        }
-
-        .navbar-nav {
-            display: none !important;
-        }
-
-        .navbar-toggler {
-            display: none !important;
-        }
-
-        .card {
-            border: none;
-            border-radius: 1rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
-            overflow: hidden;
-            background: #fff;
-        }
-
-        .card-header {
-            background: transparent;
-            border-bottom: 1px solid #f1f5f9;
-            padding: 1.5rem;
-            font-weight: 700;
-        }
-
+        [x-cloak] { display: none !important; }
         @media print {
-            .no-print {
-                display: none !important;
-            }
-
-            body {
-                background: white;
-            }
-
-            .card {
-                box-shadow: none;
-                border: 1px solid #eee;
-            }
+            .no-print { display: none !important; }
         }
     </style>
-
-    <!-- Alpine.js -->
-    <!-- JS Dependencies (Local) -->
-    <script src="{{ asset(mix('js/app.js')) }}" defer></script>
 </head>
 
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom no-print sticky-top shadow-sm">
-        <div class="container px-4">
-            <a class="navbar-brand d-flex align-items-center" href="{{ route('dashboard') }}">
-                <i class="bi bi-shield-check me-2"></i>
-                DTI-R6 TMS
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                </ul>
+<body class="font-sans antialiased bg-gray-50 text-slate-800">
+    <nav class="bg-navy shadow-lg sticky top-0 z-50 no-print">
+        <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a class="flex items-center text-white font-extrabold tracking-tight text-xl hover:text-white/90 transition-colors" href="{{ route('dashboard') }}">
+                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    DTI-R6 TMS
+                </a>
             </div>
         </div>
     </nav>
+
     <main>
         @yield('content')
     </main>
-    <div class="container text-center py-4 no-print">
-        <p class="small mb-0" style="color: #94a3b8;">&copy; 2026 DTI Region VI - Transmittal Management System. All rights reserved. | Developed by DTI Region VI MIS</p>
+
+    <div class="text-center py-6 no-print">
+        <p class="text-sm text-slate-400">&copy; 2026 DTI Region VI - Transmittal Management System. All rights reserved. | Developed by DTI Region VI MIS</p>
     </div>
 </body>
-
 </html>

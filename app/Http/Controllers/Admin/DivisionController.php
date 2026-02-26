@@ -90,12 +90,6 @@ class DivisionController extends Controller
 
     public function destroy(Division $division)
     {
-        // Add check if division has users
-        if ($division->users()->exists()) {
-            return redirect()->route('admin.divisions.index')
-                           ->with('error', 'Cannot delete division with assigned users.');
-        }
-        
         $division->delete();
         return redirect()->route('admin.divisions.index')->with('success', 'Division deleted successfully.');
     }

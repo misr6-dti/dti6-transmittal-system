@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('type'); // Regional, Provincial, Negosyo Center, Attached
             $table->string('code')->unique();
+            $table->unsignedBigInteger('parent_id')->nullable();
+            $table->foreign('parent_id')->references('id')->on('offices')->onDelete('set null');
             $table->timestamps();
         });
     }

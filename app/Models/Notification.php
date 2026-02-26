@@ -68,4 +68,19 @@ class Notification extends Model
         }
         return $this;
     }
+
+    /**
+     * Scope a query to only include notifications for a given user.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  \App\Models\User  $user
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeForUser($query, $user)
+    {
+        return $query->where(function ($q) use ($user) {
+            $q->where('office_id', $user->office_id)
+              ->orWhere('user_id', $user->id);
+        });
+    }
 }

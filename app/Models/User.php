@@ -23,6 +23,7 @@ class User extends Authenticatable
         'email',
         'password',
         'office_id',
+        'division_id',
         'login_count',
         'last_login_at',
     ];
@@ -32,6 +33,11 @@ class User extends Authenticatable
     public function office()
     {
         return $this->belongsTo(Office::class);
+    }
+
+    public function division()
+    {
+        return $this->belongsTo(Division::class);
     }
 
     public function sentTransmittals()
@@ -45,6 +51,14 @@ class User extends Authenticatable
     }
 
 
+
+    /**
+     * Check if user is an Admin
+     */
+    public function isAdmin(): bool
+    {
+        return $this->hasRole('Admin');
+    }
 
     /**
      * The attributes that should be hidden for serialization.

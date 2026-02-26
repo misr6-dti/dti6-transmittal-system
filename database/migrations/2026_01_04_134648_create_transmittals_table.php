@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('transmittals', function (Blueprint $table) {
             $table->id();
             $table->string('reference_number')->unique();
+            $table->string('verification_token', 64)->nullable()->unique();
+            $table->string('qr_token', 16)->nullable()->unique();
             $table->date('transmittal_date');
             $table->foreignId('sender_user_id')->constrained('users');
             $table->foreignId('sender_office_id')->constrained('offices');

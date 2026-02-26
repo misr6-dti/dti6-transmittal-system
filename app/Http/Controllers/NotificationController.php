@@ -13,10 +13,7 @@ class NotificationController extends Controller
      */
     public function index()
     {
-        $notifications = Notification::where(function($query) {
-                $query->where('office_id', Auth::user()->office_id)
-                      ->orWhere('user_id', Auth::id());
-            })
+        $notifications = Notification::forUser(Auth::user())
             ->latest()
             ->paginate(10);
 
@@ -28,10 +25,7 @@ class NotificationController extends Controller
      */
     public function getUnread()
     {
-        $notifications = Notification::where(function($query) {
-                $query->where('office_id', Auth::user()->office_id)
-                      ->orWhere('user_id', Auth::id());
-            })
+        $notifications = Notification::forUser(Auth::user())
             ->whereNull('read_at')
             ->latest()
             ->limit(5)
@@ -90,10 +84,7 @@ class NotificationController extends Controller
      */
     public function markAllAsRead()
     {
-        Notification::where(function($query) {
-                $query->where('office_id', Auth::user()->office_id)
-                      ->orWhere('user_id', Auth::id());
-            })
+        Notification::forUser(Auth::user())
             ->whereNull('read_at')
             ->update(['read_at' => now()]);
 
@@ -105,10 +96,7 @@ class NotificationController extends Controller
      */
     public function unreadCount()
     {
-        $count = Notification::where(function($query) {
-                $query->where('office_id', Auth::user()->office_id)
-                      ->orWhere('user_id', Auth::id());
-            })
+        $count = Notification::forUser(Auth::user())
             ->whereNull('read_at')
             ->count();
 

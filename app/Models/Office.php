@@ -67,5 +67,41 @@ class Office extends Model
         // Fallback to self if no Regional/Provincial parent found
         return $this;
     }
+
+    /**
+     * Format offices with hierarchy for dropdown display
+     * Returns collection with prefixed codes showing the office structure
+     */
+    public static function formatHierarchy($offices, $parentId = null, $prefix = '')
+    {
+        $result = [];
+        
+        // Convert to array for easier iteration
+        $officesArray = $offices->toArray();
+        
+        foreach ($officesArray as $office) {
+            // Only show offices matching current parent level
+            if (($office['parent_id'] === $parentId) || ($parentId === null && empty($office['parent_id']))) {
+                // Create display name with hierarchy using code
+                $displayName = $prefix . $office['code'] . ' (' . $office['type'] . ')';
+                
+                // Create a new object with display_name
+                $officeObj = (object) $office;
+                $officeObj->display_name = $displayName;
+                $result[] = $officeObj;
+                
+                // Recursively add children with increased indentation
+                $childResult = self::formatHierarchy(
+                    $offices, 
+                    $office['id'], 
+                    $prefix . '&nbsp;&nbsp;&nbsp;'
+                );
+                // Convert collection to array for merging
+                $result = array_merge($result, $childResult->toArray());
+            }
+        }
+        
+        return collect($result);
+    }
 }
 

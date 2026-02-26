@@ -12,8 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->unsignedInteger('login_count')->default(0)->after('office_id');
-            $table->timestamp('last_login_at')->nullable()->after('login_count');
+            $table->foreignId('division_id')->nullable()->constrained('divisions')->nullOnDelete();
         });
     }
 
@@ -23,7 +22,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['login_count', 'last_login_at']);
+            $table->dropForeign(['division_id']);
+            $table->dropColumn('division_id');
         });
     }
 };

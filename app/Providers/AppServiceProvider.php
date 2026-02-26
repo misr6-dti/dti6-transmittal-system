@@ -19,8 +19,18 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $appUrl = config('app.url');
+        if ($appUrl) {
+            \Illuminate\Support\Facades\URL::forceRootUrl($appUrl);
+            if (strpos($appUrl, 'https://') === 0) {
+                \Illuminate\Support\Facades\URL::forceScheme('https');
+            }
+        }
+
         \Illuminate\Pagination\Paginator::useBootstrap();
         \Illuminate\Support\Facades\Gate::policy(\App\Models\Transmittal::class, \App\Policies\TransmittalPolicy::class);
+        \Illuminate\Support\Facades\Gate::policy(\App\Models\DocumentLog::class, \App\Policies\DocumentLogPolicy::class);
+        \App\Models\DocumentLog::observe(\App\Observers\DocumentLogObserver::class);
 
         // Track Login Statistics
         \Illuminate\Support\Facades\Event::listen(

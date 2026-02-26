@@ -18,16 +18,32 @@ class DatabaseSeeder extends Seeder
         $this->call([
             OfficeSeeder::class,
             RolesAndPermissionsSeeder::class,
+            DocumentLogPermissionSeeder::class,
+            DivisionSeeder::class,
         ]);
+
+        $ro6_id = \App\Models\Office::where('code', 'RO6')->first()->id;
 
         // Create Admin User
-        $user = User::create([
-            'name' => 'MIS Admin',
-            'email' => 'admin@dti6.gov.ph',
-            'password' => \Illuminate\Support\Facades\Hash::make('password'),
-            'office_id' => \App\Models\Office::where('code', 'RO6')->first()->id,
-        ]);
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@dti6.gov.ph'],
+            [
+                'name' => 'MIS Admin',
+                'password' => \Illuminate\Support\Facades\Hash::make('password'),
+                'office_id' => $ro6_id,
+            ]
+        );
+        $admin->assignRole('Admin');
 
-        $user->assignRole('Super Admin');
+        // Create Default User
+        $user = User::firstOrCreate(
+            ['email' => 'user@dti6.gov.ph'],
+            [
+                'name' => 'Default User',
+                'password' => \Illuminate\Support\Facades\Hash::make('password'),
+                'office_id' => $ro6_id,
+            ]
+        );
+        $user->assignRole('User');
     }
 }

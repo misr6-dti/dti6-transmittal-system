@@ -1,346 +1,124 @@
 @extends('layouts.public')
 
 @section('content')
-<div class="tracking-container">
-    <div class="tracking-wrapper">
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-200 flex items-center justify-center p-4 print:p-0 print:bg-white">
+    <div class="w-full max-w-lg">
         @if ($transmittal)
-            <div class="tracking-card">
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100 transition-all duration-300 hover:shadow-2xl print:shadow-none print:border-none">
                 <!-- Card Header -->
-                <div class="tracking-header">
+                <div class="p-8 bg-gradient-to-r from-navy to-blue-900 text-white flex justify-between items-start gap-4">
                     <div>
-                        <h2 class="tracking-title">{{ $transmittal->reference_number }}</h2>
-                        <p class="tracking-subtitle">Transmittal Tracking</p>
+                        <h2 class="text-3xl font-bold tracking-tight mb-1">{{ $transmittal->reference_number }}</h2>
+                        <p class="text-blue-200 text-sm font-medium">Transmittal Tracking</p>
                     </div>
-                    <span class="tracking-badge bg-{{ strtolower($transmittal->status) === 'received' ? 'success' : (strtolower($transmittal->status) === 'submitted' ? 'warning' : 'secondary') }}">
-                        {{ strtoupper($transmittal->status) }}
+                    @php
+                        $statusColors = [
+                            'Draft' => 'bg-slate-500/20 text-slate-100 border-slate-400/30',
+                            'Submitted' => 'bg-amber-500/20 text-amber-100 border-amber-400/30',
+                            'Received' => 'bg-emerald-500/20 text-emerald-100 border-emerald-400/30',
+                            'Returned' => 'bg-rose-500/20 text-rose-100 border-rose-400/30'
+                        ];
+                        $statusClass = $statusColors[$transmittal->status] ?? 'bg-slate-500/20 text-slate-100 border-slate-400/30';
+                    @endphp
+                    <span class="px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider border backdrop-blur-sm {{ $statusClass }}">
+                        {{ $transmittal->status }}
                     </span>
                 </div>
 
                 <!-- Card Body -->
-                <div class="tracking-body">
+                <div class="p-8">
                     <!-- Date Information -->
-                    <div class="tracking-section">
-                        <div class="tracking-field">
-                            <label class="tracking-label">Execution Date</label>
-                            <p class="tracking-value">{{ \Carbon\Carbon::parse($transmittal->transmittal_date)->format('M d, Y') }}</p>
+                    <div class="space-y-4 mb-8">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Execution Date</label>
+                            <p class="text-lg font-bold text-navy">{{ \Carbon\Carbon::parse($transmittal->transmittal_date)->format('F d, Y') }}</p>
                         </div>
                         @if ($transmittal->received_at)
-                            <div class="tracking-field">
-                                <label class="tracking-label">Received Date</label>
-                                <p class="tracking-value">{{ \Carbon\Carbon::parse($transmittal->received_at)->format('M d, Y H:i A') }}</p>
+                            <div>
+                                <label class="block text-xs font-bold text-emerald-600 uppercase tracking-wider mb-1">
+                                    <svg class="w-3 h-3 inline mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                    Received Date
+                                </label>
+                                <p class="text-lg font-bold text-navy">{{ \Carbon\Carbon::parse($transmittal->received_at)->format('F d, Y h:i A') }}</p>
                             </div>
                         @endif
                     </div>
 
-                    <div class="tracking-divider"></div>
+                    <div class="h-px bg-slate-100 w-full mb-8"></div>
 
                     <!-- Location Information -->
-                    <div class="tracking-section">
-                        <div class="tracking-location">
-                            <div class="tracking-location-item">
-                                <div class="tracking-location-icon from">
-                                    <i class="bi bi-geo-alt"></i>
+                    <div class="relative">
+                        <!-- Connecting Line -->
+                        <div class="absolute top-1/2 left-0 right-0 h-0.5 bg-slate-100 -translate-y-1/2 md:block hidden"></div>
+                        
+                        <div class="flex flex-col md:flex-row justify-between items-center gap-8 md:gap-4 relative z-10">
+                            <!-- From -->
+                            <div class="text-center bg-white p-2">
+                                <div class="w-14 h-14 mx-auto bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-500/30 mb-3">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                                 </div>
-                                <label class="tracking-label">From</label>
-                                <p class="tracking-location-code">{{ $transmittal->senderOffice->code }}</p>
-                                <p class="tracking-location-name">{{ $transmittal->senderOffice->name }}</p>
+                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">From</label>
+                                <p class="text-lg font-bold text-navy leading-none mb-1">{{ $transmittal->senderOffice->code }}</p>
+                                <p class="text-xs text-slate-500 font-medium max-w-[120px] mx-auto leading-tight">{{ $transmittal->senderOffice->name }}</p>
                             </div>
 
-                            <div class="tracking-arrow">
-                                <i class="bi bi-arrow-right"></i>
+                            <!-- Arrow (Mobile: Down, Desktop: Right) -->
+                            <div class="text-slate-300 md:rotate-0 rotate-90 bg-white p-2 rounded-full">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                             </div>
 
-                            <div class="tracking-location-item">
-                                <div class="tracking-location-icon to">
-                                    <i class="bi bi-flag"></i>
+                            <!-- To -->
+                            <div class="text-center bg-white p-2">
+                                <div class="w-14 h-14 mx-auto bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-purple-500/30 mb-3">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-8a2 2 0 012-2h14a2 2 0 012 2v8"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
                                 </div>
-                                <label class="tracking-label">To</label>
-                                <p class="tracking-location-code">{{ $transmittal->receiverOffice->code }}</p>
-                                <p class="tracking-location-name">{{ $transmittal->receiverOffice->name }}</p>
+                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">To</label>
+                                <p class="text-lg font-bold text-navy leading-none mb-1">{{ $transmittal->receiverOffice->code }}</p>
+                                <p class="text-xs text-slate-500 font-medium max-w-[120px] mx-auto leading-tight">{{ $transmittal->receiverOffice->name }}</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Card Footer -->
-                <div class="tracking-footer">
-                    <p class="tracking-footer-text">
-                        <i class="bi bi-shield-check me-2"></i>Secure tracking link - Do not share with unauthorized persons
+                <div class="px-8 py-6 bg-slate-50 border-t border-slate-100">
+                    <p class="text-xs text-slate-500 flex items-center justify-center text-center">
+                        <svg class="w-4 h-4 mr-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                        This page is publicly accessible. Do not share this link with unauthorized persons.
                     </p>
                 </div>
+
+                <!-- Receive Action for Authorized Users -->
+                @auth
+                    @if(Auth::user()->can('receive', $transmittal) && $transmittal->status === 'Submitted')
+                        <div class="p-8 border-t border-slate-100 bg-slate-50/50">
+                            <form action="{{ route('transmittals.receive', $transmittal) }}" method="POST">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" class="w-full py-4 bg-navy hover:bg-navy-light text-white rounded-xl font-bold uppercase tracking-wider shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-0.5 flex items-center justify-center" onclick="return confirm('Are you sure you want to mark this transmittal as RECEIVED?')">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                                    Mark as Received
+                                </button>
+                            </form>
+                            <p class="text-center text-xs text-navy/60 font-medium mt-3">You are authorized to receive this document.</p>
+                        </div>
+                    @endif
+                @endauth
             </div>
         @else
-            <div class="tracking-card error">
-                <div class="tracking-body text-center">
-                    <div class="error-icon">
-                        <i class="bi bi-exclamation-circle"></i>
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-red-100">
+                <div class="p-12 text-center">
+                    <div class="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6 text-red-500">
+                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
                     </div>
-                    <h3>Transmittal Not Found</h3>
-                    <p>{{ $error ?? 'The transmittal reference number could not be found in the system. Please check the QR code or reference number and try again.' }}</p>
+                    <h3 class="text-xl font-bold text-slate-800 mb-2">Transmittal Not Found</h3>
+                    <p class="text-slate-500 max-w-xs mx-auto text-sm leading-relaxed">{{ $error ?? 'The transmittal reference number could not be found in the system. Please check the QR code or reference number and try again.' }}</p>
+                </div>
+                <div class="px-8 py-4 bg-slate-50 border-t border-slate-100 text-center">
+                   <a href="{{ route('transmittals.index') }}" class="text-navy font-bold text-sm hover:underline">Return to Home</a> 
                 </div>
             </div>
         @endif
     </div>
 </div>
-
-<style>
-    .tracking-container {
-        display: flex;
-        justify-content: center;
-        align-items: flex-start;
-        padding: 1.5rem 1rem 1.5rem 1rem;
-        min-height: 100vh;
-        background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
-    }
-
-    .tracking-wrapper {
-        width: 100%;
-        max-width: 500px;
-    }
-
-    .tracking-card {
-        background: white;
-        border-radius: 1.5rem;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-        overflow: hidden;
-        border: 1px solid #e5e7eb;
-        transition: all 0.3s ease;
-    }
-
-    .tracking-card:hover {
-        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
-    }
-
-    .tracking-card.error {
-        border-color: #fee2e2;
-        background: #fef2f2;
-    }
-
-    .tracking-header {
-        padding: 2rem;
-        background: linear-gradient(135deg, #001f3f 0%, #003366 100%);
-        color: white;
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: 1rem;
-    }
-
-    .tracking-title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        margin: 0;
-        letter-spacing: -0.5px;
-    }
-
-    .tracking-subtitle {
-        font-size: 0.875rem;
-        margin: 0.5rem 0 0 0;
-        opacity: 0.8;
-        font-weight: 500;
-    }
-
-    .tracking-badge {
-        padding: 0.5rem 1rem;
-        border-radius: 0.75rem;
-        font-size: 0.75rem;
-        font-weight: 700;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-        white-space: nowrap;
-    }
-
-    .tracking-badge.bg-success {
-        background: linear-gradient(135deg, #059669, #10b981) !important;
-        color: white !important;
-    }
-
-    .tracking-badge.bg-warning {
-        background: linear-gradient(135deg, #2563eb, #3b82f6) !important;
-        color: white !important;
-    }
-
-    .tracking-badge.bg-secondary {
-        background: linear-gradient(135deg, #6b7280, #9ca3af) !important;
-        color: white !important;
-    }
-
-    .tracking-body {
-        padding: 2rem;
-    }
-
-    .tracking-section {
-        margin-bottom: 1.5rem;
-    }
-
-    .tracking-field {
-        margin-bottom: 1.25rem;
-    }
-
-    .tracking-field:last-child {
-        margin-bottom: 0;
-    }
-
-    .tracking-label {
-        display: block;
-        font-size: 0.8rem;
-        font-weight: 600;
-        color: #6b7280;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 0.5rem;
-    }
-
-    .tracking-value {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: #111827;
-        margin: 0;
-    }
-
-    .tracking-divider {
-        height: 1px;
-        background: linear-gradient(90deg, transparent, #e5e7eb, transparent);
-        margin: 1.5rem 0;
-    }
-
-    .tracking-location {
-        display: flex;
-        align-items: center;
-        gap: 1.5rem;
-    }
-
-    .tracking-location-item {
-        flex: 1;
-        text-align: center;
-    }
-
-    .tracking-location-icon {
-        width: 3rem;
-        height: 3rem;
-        border-radius: 1rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 0.75rem;
-        font-size: 1.5rem;
-        color: white;
-    }
-
-    .tracking-location-icon.from {
-        background: linear-gradient(135deg, #3b82f6, #2563eb);
-    }
-
-    .tracking-location-icon.to {
-        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-    }
-
-    .tracking-location-code {
-        font-size: 0.95rem;
-        font-weight: 700;
-        color: #111827;
-        margin: 0 0 0.25rem 0;
-    }
-
-    .tracking-location-name {
-        font-size: 0.8rem;
-        color: #6b7280;
-        margin: 0;
-        line-height: 1.4;
-    }
-
-    .tracking-arrow {
-        display: flex;
-        align-items: center;
-        color: #d1d5db;
-        font-size: 1.25rem;
-    }
-
-    .tracking-footer {
-        padding: 1.5rem 2rem;
-        background-color: #f9fafb;
-        border-top: 1px solid #e5e7eb;
-    }
-
-    .tracking-footer-text {
-        font-size: 0.8rem;
-        color: #6b7280;
-        margin: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    /* Error State */
-    .tracking-card.error .tracking-body {
-        text-align: center;
-        padding: 3rem 2rem;
-    }
-
-    .error-icon {
-        font-size: 3rem;
-        color: #ef4444;
-        margin-bottom: 1rem;
-    }
-
-    .tracking-card.error h3 {
-        color: #111827;
-        font-size: 1.35rem;
-        font-weight: 700;
-        margin: 0 0 0.75rem 0;
-    }
-
-    .tracking-card.error p {
-        color: #6b7280;
-        font-size: 0.95rem;
-        margin: 0;
-        line-height: 1.6;
-    }
-
-    @media print {
-        .tracking-container {
-            background: white;
-            padding: 0;
-            min-height: auto;
-        }
-
-        .tracking-card {
-            box-shadow: none;
-            border: 1px solid #e5e7eb;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .tracking-container {
-            padding: 1.5rem 1rem;
-        }
-
-        .tracking-header {
-            padding: 1.5rem;
-            flex-direction: column;
-        }
-
-        .tracking-title {
-            font-size: 1.25rem;
-        }
-
-        .tracking-body {
-            padding: 1.5rem;
-        }
-
-        .tracking-location {
-            gap: 1rem;
-        }
-
-        .tracking-location-icon {
-            width: 2.5rem;
-            height: 2.5rem;
-            font-size: 1.25rem;
-        }
-
-        .tracking-arrow {
-            font-size: 1rem;
-        }
-    }
-</style>
 @endsection

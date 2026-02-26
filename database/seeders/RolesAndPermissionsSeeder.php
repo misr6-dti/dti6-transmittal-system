@@ -32,17 +32,19 @@ class RolesAndPermissionsSeeder extends Seeder
             Permission::findOrCreate($permission);
         }
 
-        // create roles and assign existing permissions
-        $role = Role::findOrCreate('Super Admin');
-        $role->givePermissionTo(Permission::all());
+        // Admin: all permissions
+        $admin = Role::findOrCreate('Admin');
+        $admin->givePermissionTo(Permission::all());
 
-        Role::findOrCreate('Office Head')
-            ->givePermissionTo(['view transmittals', 'receive transmittals', 'view reports']);
-
-        Role::findOrCreate('Office Staff')
-            ->givePermissionTo(['view transmittals', 'create transmittals', 'receive transmittals']);
-            
-        Role::findOrCreate('Regional MIS')
-            ->givePermissionTo(Permission::all());
+        // User: standard operational permissions
+        Role::findOrCreate('User')
+            ->givePermissionTo([
+                'view transmittals',
+                'create transmittals',
+                'edit transmittals',
+                'delete transmittals',
+                'receive transmittals',
+                'view reports',
+            ]);
     }
 }

@@ -45,7 +45,7 @@ class RegisteredUserController extends Controller
         ]);
 
         // Assign default role using Spatie
-        $user->assignRole('Office Staff');
+        $user->assignRole('User');
 
         event(new Registered($user));
 
