@@ -11,6 +11,13 @@ const mix = require("laravel-mix");
  |
  */
 
+// Dynamic resource root for subdirectory deployments
+// Set MIX_ASSET_URL in .env to match your APP_URL (e.g., /dti6-tms/public)
+if (process.env.MIX_ASSET_URL) {
+    const url = new URL(process.env.MIX_ASSET_URL, 'http://localhost');
+    mix.setResourceRoot(url.pathname.replace(/\/$/, '') + '/');
+}
+
 mix.js("resources/js/app.js", "public/js")
     .postCss("resources/css/app.css", "public/css", [
         require("tailwindcss"),

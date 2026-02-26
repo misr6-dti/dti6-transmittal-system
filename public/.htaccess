@@ -23,3 +23,13 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+
+# Security Headers — use Permissions-Policy (modern), not Feature-Policy (deprecated)
+<IfModule mod_headers.c>
+    # Remove deprecated Feature-Policy to prevent conflict with Permissions-Policy
+    Header unset Feature-Policy
+    # Modern Permissions-Policy header
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+    # Prevent MIME-type sniffing
+    Header always set X-Content-Type-Options "nosniff"
+</IfModule>
