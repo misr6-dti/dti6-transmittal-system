@@ -25,8 +25,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Assets -->
-    <link rel="stylesheet" href="{{ mix('css/app.css') }}">
-    <script src="{{ mix('js/app.js') }}" defer></script>
+    <link rel="stylesheet" href="{{ asset(mix('css/app.css')) }}">
+    <script src="{{ asset(mix('js/app.js')) }}" defer></script>
     <style>
         [x-cloak] { display: none !important; }
         @media print {
